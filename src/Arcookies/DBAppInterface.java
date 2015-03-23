@@ -2,6 +2,7 @@ package Arcookies;
 
 import java.util.Hashtable;
 import java.util.Iterator;
+import exceptions.*;
 
 public interface DBAppInterface {
 
