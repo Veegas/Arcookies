@@ -1,5 +1,7 @@
 package Arcookies;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -7,6 +9,8 @@ import exceptions.DBAppException;
 import exceptions.DBEngineException;
 
 public class DBApp implements DBAppInterface{
+	
+	ArrayList<Table> tables = new ArrayList<Table>();
 
 	public static void main (String [] args) {
 	}
@@ -21,8 +25,10 @@ public class DBApp implements DBAppInterface{
 	public void createTable(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
-			throws DBAppException {
-		// TODO Auto-generated method stub
+			throws DBAppException, IOException {
+		
+		Table newTable = new Table( strTableName,htblColNameType, htblColNameRefs,strKeyColName);
+		tables.add(newTable);
 		
 	}
 
