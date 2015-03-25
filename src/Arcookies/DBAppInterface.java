@@ -1,7 +1,9 @@
 package Arcookies;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
+
 import exceptions.*;
 
 public interface DBAppInterface {
@@ -12,7 +14,7 @@ public interface DBAppInterface {
 	 Hashtable<String,String> htblColNameType,
 	 Hashtable<String,String>htblColNameRefs,
 	 String strKeyColName)
-	throws DBAppException;
+	throws DBAppException, IOException;
 	
 	
 	public void createIndex(String strTableName,
