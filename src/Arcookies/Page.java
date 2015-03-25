@@ -22,15 +22,17 @@ public class Page  implements java.io.Serializable{
 	String page_id;
 	
 	public void saveToDisk() throws IOException {
+		String filename = page_id + ".class";
 		FileOutputStream fileOut =
-		         new FileOutputStream(page_id + ".class");
+		         new FileOutputStream(filename);
 		         ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		         out.writeObject(this);
 		         out.close();
 		         fileOut.close();
+		         System.out.println(filename);
 	}
 	
-	public Page loadFromDisk() throws ClassNotFoundException, IOException {
+	public static Page loadFromDisk(String page_id) throws ClassNotFoundException, IOException {
 		FileInputStream fileIn = new FileInputStream(page_id + ".class");
         ObjectInputStream in = new ObjectInputStream(fileIn);
         Page page = (Page) in.readObject();
@@ -39,7 +41,43 @@ public class Page  implements java.io.Serializable{
         return page;
 	}
 	
+	public void insertTuple(Comparable [] tuple) {
+		tuples.add(tuple);
+	}
+
+	public ArrayList<Comparable[]> getTuples() {
+		return tuples;
+	}
+
+	public void setTuples(ArrayList<Comparable[]> tuples) {
+		this.tuples = tuples;
+	}
+
+	public String getPage_id() {
+		return page_id;
+	}
+
+	public void setPage_id(String page_id) {
+		this.page_id = page_id;
+	}
+
+	public Page(String page_id) {
+		super();
+		this.page_id = page_id;
+	}
 	
+	public static void main (String [] args) {
+		try {
+			Page page = Page.loadFromDisk("page_1");
+			System.out.println("This is page id loaded " + page.page_id);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	
 	
