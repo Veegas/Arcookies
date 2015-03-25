@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
-
+import net.sf.javaml.core.kdtree.*;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
 
