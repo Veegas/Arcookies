@@ -3,6 +3,8 @@ package Arcookies;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class Table {
@@ -21,24 +23,32 @@ public class Table {
 	 ArrayList<String> pages = new ArrayList<String>();
 	 pageCount = 0;
 	 this.tableName = strTableName;
-	 ArrayList<String> types = new ArrayList<String>(htblColNameType.values());
-	 Set<String> colNameType = htblColNameType.keySet();
 	 
-	 ArrayList<String> refs = new ArrayList<String>(htblColNameRefs.values());
-	 Set<String> colNameRefs = htblColNameType.keySet();
+	 Set nameType = htblColNameType.entrySet();
+	    Iterator it1 = nameType.iterator();
 	 
-	 String [] nameRefs = (String[]) colNameRefs.toArray();
-	 String [] nameTypes = (String[]) colNameType.toArray();
-	 for (int i = 0; i< nameTypes.length && i< types.size();i++){
+	 while(it1.hasNext()){
 		 
-		 for (int j = 0; j< nameRefs.length && j< refs.size();i++){
-			 if(nameTypes[i] == nameRefs[j]){
-				 boolean key = false;
-				 if (nameTypes[i]== strKeyColName){
-					 key = true;
-				 }
-				 CsvController.writeCsvFile(strTableName,nameTypes[i],key,false,refs.get(j),types.get(i));
+		 boolean flag = false;
+		 boolean key = false;
+		 Map.Entry entry = (Map.Entry) it1.next();
+		 
+		 if (entry.getKey()== strKeyColName){
+			 key = true;
+		 }
+		 
+		 Set nameRefs = htblColNameRefs.entrySet();
+		    Iterator it2 = nameRefs.iterator();
+		    
+		 while(it2.hasNext()){
+			 Map.Entry entry2 = (Map.Entry) it2.next();
+			 if(entry.getKey() == entry2.getKey()){
+				 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,(String)(entry2.getValue()),(String)(entry.getValue()));
+			 flag = true;
 			 }
+		 }
+		 if(!flag){
+			 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,null,(String)entry.getValue());
 		 }
 	 }
 	 
