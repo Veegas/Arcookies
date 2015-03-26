@@ -17,46 +17,51 @@ public class Table {
 	private Hashtable<String, String> htblColNameRefs;
 	private Set<String> colNameType;
 
-	
-	public Table (String strTableName,
-				Hashtable<String, String> htblColNameType,
-				Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException {
-		 
-		 ArrayList<String> pages = new ArrayList<String>();
-		 pageCount = 0;
-		 this.tableName = strTableName;
-		 this.htblColNameRefs = htblColNameRefs;
-		 this.htblColNameType = htblColNameType;
-	
-		 Set nameType = htblColNameType.entrySet();
-		    Iterator it1 = nameType.iterator();
-		 
-		 while(it1.hasNext()){
-			 
-			 boolean flag = false;
-			 boolean key = false;
-			 Map.Entry entry = (Map.Entry) it1.next();
-			 
-			 if (entry.getKey()== strKeyColName){
-				 key = true;
-			 }
-			 
-			 Set nameRefs = htblColNameRefs.entrySet();
-			    Iterator it2 = nameRefs.iterator();
-			    
-			 while(it2.hasNext()){
-				 Map.Entry entry2 = (Map.Entry) it2.next();
-				 if(entry.getKey() == entry2.getKey()){
-					 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,(String)(entry2.getValue()),(String)(entry.getValue()));
-				 flag = true;
-				 }
-			 }
-			 if(!flag){
-				 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,null,(String)entry.getValue());
-			 }
-		 }
-		 
-	 }
+	public Table(String strTableName,
+			Hashtable<String, String> htblColNameType,
+			Hashtable<String, String> htblColNameRefs, String strKeyColName)
+			throws IOException {
+
+		ArrayList<String> pages = new ArrayList<String>();
+		pageCount = 0;
+		this.tableName = strTableName;
+		this.htblColNameRefs = htblColNameRefs;
+		this.htblColNameType = htblColNameType;
+
+		Set nameType = htblColNameType.entrySet();
+		Iterator it1 = nameType.iterator();
+
+		while (it1.hasNext()) {
+
+			boolean flag = false;
+			boolean key = false;
+			Map.Entry entry = (Map.Entry) it1.next();
+
+			if (entry.getKey() == strKeyColName) {
+				key = true;
+			}
+
+			Set nameRefs = htblColNameRefs.entrySet();
+			Iterator it2 = nameRefs.iterator();
+
+			while (it2.hasNext()) {
+				Map.Entry entry2 = (Map.Entry) it2.next();
+				if (entry.getKey() == entry2.getKey()) {
+					CsvController.writeCsvFile(strTableName,
+							(String) entry.getKey(), key, false,
+							(String) (entry2.getValue()),
+							(String) (entry.getValue()));
+					flag = true;
+				}
+			}
+			if (!flag) {
+				CsvController.writeCsvFile(strTableName,
+						(String) entry.getKey(), key, false, null,
+						(String) entry.getValue());
+			}
+		}
+
+	}
 
 	public ArrayList<String> getPages() {
 		return pages;
@@ -66,12 +71,21 @@ public class Table {
 		this.pages = pages;
 	}
 
-	public void insertIntoPage(Hashtable<String, String> htblColNameValue) {
-		String [] tuples = new String [colNameType.size()];
-		while (htblColNameValue.elements().hasMoreElements()) {
-			
+	public void insertIntoPage(Hashtable<String, String> htblColNameValue) throws IOException {
+		ArrayList<String> tuples = new ArrayList<String>(htblColNameValue.values());
+		if(latestPage == null || latestPage.row_count >= 200) {
+			latestPage = createNewPage();
+			latestPage.insertTuple((Comparable[]) tuples.toArray());
+		}  
+		else {
+			latestPage.insertTuple((Comparable[]) tuples.toArray());
 		}
+		latestPage.saveToDisk();
 	}
-	
-	
+	public Page createNewPage() {
+		Page page =  new Page(tableName + "_" + pageCount);
+		pageCount++;
+		return page;
+	}
+
 }
