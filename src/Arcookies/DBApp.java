@@ -104,8 +104,14 @@ public class DBApp implements DBAppInterface{
 			Hashtable<String, String> htblColNameValue) throws DBAppException {
 		// TODO Auto-generated method stub
 		for (Table table : tables) {
-			if(table.getName()==strTableName){
-				
+			if(table.getName()== strTableName){
+				try {
+					Page tempPage = table.insertIntoPage(htblColNameValue);
+					
+				} catch (ClassNotFoundException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -129,6 +135,16 @@ public class DBApp implements DBAppInterface{
 	@Override
 	public void saveAll() throws DBEngineException {
 		// TODO Auto-generated method stub
-		
+		for (Table table: tables) {
+			for(Page page: table.getUsedPages()) {
+				try {
+					page.saveToDisk();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
 	}
 }

@@ -77,13 +77,38 @@ public class Table {
 		return this.tableName;
 	}
 
-	public void insertIntoPage(Hashtable<String, String> htblColNameValue)
+	public ArrayList<Page> getUsedPages() {
+		return usedPages;
+	}
+
+	public void setUsedPages(ArrayList<Page> usedPages) {
+		this.usedPages = usedPages;
+	}
+
+	public String getStrKeyColName() {
+		return strKeyColName;
+	}
+
+	public void setStrKeyColName(String strKeyColName) {
+		this.strKeyColName = strKeyColName;
+	}
+
+	public Page insertIntoPage(Hashtable<String, String> htblColNameValue)
 			throws IOException, ClassNotFoundException {
 		ArrayList<String> record = new ArrayList<String>();
 		for(String columnHead: columns) {
 			String value = htblColNameValue.get(columnHead);
 			record.add(value);
 		}
+		Page lastPage = Page.loadFromDisk(tableName + "_" + pageCount);
+		if(lastPage == null || lastPage.getRow_count() >= maxRowsPerPage) {
+			lastPage = createNewPage();
+		}
+		lastPage.insertTuple(record);
+		if(!usedPages.contains(lastPage)) {
+			usedPages.add(lastPage);
+		}
+		return lastPage;
 	}
 	
 	public String getValueFromPage(Page page, String colName, int index) {
@@ -103,8 +128,8 @@ public class Table {
 	}
 
 	public Page createNewPage() {
-		Page page = new Page(tableName + "_" + pageCount);
 		pageCount++;
+		Page page = new Page(tableName + "_" + pageCount);
 		usedPages.add(page);
 		return page;
 	}
