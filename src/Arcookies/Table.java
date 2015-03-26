@@ -17,6 +17,7 @@ public class Table {
 	private int maxRowsPerPage;
 	private ArrayList<String> columns;
 	private String strKeyColName;
+	private LinearHashTable LHT;
 
 	public Table(String strTableName,
 			Hashtable<String, String> htblColNameType,
@@ -24,7 +25,7 @@ public class Table {
 			throws IOException {
 
 		ArrayList<String> pages = new ArrayList<String>();
-
+		setLHT(new LinearHashTable((float) 0.75, 20));
 		pageCount = 0;
 		this.tableName = strTableName;
 		this.strKeyColName = strKeyColName;
@@ -150,6 +151,13 @@ public class Table {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public LinearHashTable getLHT() {
+		return LHT;
+	}
+
+	public void setLHT(LinearHashTable lHT) {
+		LHT = lHT;
 	}
 
 }
