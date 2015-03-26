@@ -17,7 +17,7 @@ public class Page  implements java.io.Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	//2D array of comparable
-	String [][] tuples;
+	ArrayList<ArrayList<String>> tuples;
 	/*El page_id hayeb2a set men el table whenever a new page is create 
 	it's id will be "[tablename]_[page number], example student_1 page number will be incremented every time "*/	
 	String page_id;
@@ -27,6 +27,7 @@ public class Page  implements java.io.Serializable{
 		super();
 		this.page_id = page_id;
 		row_count = 0;
+		tuples = new ArrayList(new ArrayList<String>()); 
 	}
 
 	public void saveToDisk() throws IOException {
@@ -49,17 +50,15 @@ public class Page  implements java.io.Serializable{
         return page;
 	}
 	
-	public void insertTuple(String [] tuple) {
-		tuples[row_count] = tuple;
-		row_count++;
+	public void insertTuple(ArrayList<String> tuple) {
+		tuples.add(tuple);
 	}
-
 	
-	public String[][] getTuples() {
+	public ArrayList<ArrayList<String>> getTuples() {
 		return tuples;
 	}
 
-	public void setTuples(String[][] tuples) {
+	public void setTuples(ArrayList<ArrayList<String>> tuples) {
 		this.tuples = tuples;
 	}
 
@@ -79,17 +78,12 @@ public class Page  implements java.io.Serializable{
 		this.row_count = row_count;
 	}
 	
-	/*public static void main (String [] args) {
-		try {
-			Page page = Page.loadFromDisk("page_1");
+	public static void main (String [] args) throws IOException, ClassNotFoundException {
+			Page page = loadFromDisk("page_1");
+			System.out.println(page.tuples);
+			
 			System.out.println("This is page id loaded " + page.page_id);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
+		
+	}
 	
 }
