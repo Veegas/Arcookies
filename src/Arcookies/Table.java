@@ -14,6 +14,7 @@ public class Table {
 	private ArrayList<String> pages;
 	private Page latestPage;
 	private int pageCount;
+	
 
 	
 	public Table (String strTableName,
@@ -65,6 +66,10 @@ public class Table {
 
 	public void setPages(ArrayList<String> pages) {
 		this.pages = pages;
+	}
+	
+	public String getName(){
+		return this.tableName;
 	}
 
 	public void insertIntoPage(Hashtable<String, String> htblColNameValue)

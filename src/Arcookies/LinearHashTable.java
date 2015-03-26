@@ -9,39 +9,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-/**
- * @author  mohamed
- */
 public class LinearHashTable implements Map<String, String> {
 
-	/**
-     * @uml.property  name="loadFactor"
-     */
+	
 	private float loadFactor;
-	/**
-     * @uml.property  name="bucketSize"
-     */
 	private int bucketSize;
-	/**
-     * @uml.property  name="size"
-     */
 	private int size;
-	/**
-     * @uml.property  name="digits"
-     */
 	private int digits;
-	/**
-     * @uml.property  name="hashSeed"
-     */
 	private int hashSeed;
-	/**
-     * @uml.property  name="numberOfItems"
-     */
 	private int numberOfItems;
-	/**
-     * @uml.property  name="buckets"
-     * @uml.associationEnd  multiplicity="(0 -1)" inverse="this$0:data_structures.linearHashTable.LinearHashTable$Bucket"
-     */
 	private ArrayList<Bucket> buckets;
 
 	public LinearHashTable(float loadFactor, int bucketSize) {
@@ -85,12 +61,12 @@ public class LinearHashTable implements Map<String, String> {
 		}
 		return null;
 	}
-
+/*
 	@Override
 	public boolean containsValue(Object value) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	}*/
 
 	@Override
 	public String get(Object key) {
@@ -134,9 +110,7 @@ public class LinearHashTable implements Map<String, String> {
         bucket.scan();
 	}
 
-    public void downSize(){
-
-    }
+   
 
     @Override
     public int hashCode() {
@@ -189,14 +163,9 @@ public class LinearHashTable implements Map<String, String> {
 		return null;
 	}
 	
-	/**
-     * @author   mohamed
-     */
+	
 	class Bucket {
-		/**
-         * @uml.property  name="entries"
-         * @uml.associationEnd  multiplicity="(0 -1)"
-         */
+		
 		LHTEntry[] entries;
 		int lastItem;
 		LinkedList<LHTEntry> overflow;
@@ -287,19 +256,10 @@ public class LinearHashTable implements Map<String, String> {
         }
     }
 	
-	/**
-     * @author   mohamed
-     */
+	
 	class LHTEntry implements Entry<String, String>{
-		/**
-         * @uml.property  name="key"
-         * @uml.associationEnd  
-         */
+		
 		private String key;
-		/**
-         * @uml.property  name="value"
-         * @uml.associationEnd  
-         */
 		private String value;
         private int hash;
 
@@ -309,18 +269,12 @@ public class LinearHashTable implements Map<String, String> {
             this.hash = hash;
 		}
 
-		/**
-         * @return
-         * @uml.property  name="value"
-         */
+		
 		public String getValue(){
 			return value;
 		}
 
-		/**
-         * @return
-         * @uml.property  name="key"
-         */
+		
 		@Override
 		public String getKey() {
 			return key;
@@ -337,6 +291,13 @@ public class LinearHashTable implements Map<String, String> {
 			this.value = value;
 			return old;
 		}
+	}
+
+
+	@Override
+	public boolean containsValue(Object arg0) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

@@ -83,7 +83,11 @@ public class DBApp implements DBAppInterface{
 	public void insertIntoTable(String strTableName,
 			Hashtable<String, String> htblColNameValue) throws DBAppException {
 		// TODO Auto-generated method stub
-		
+		for (Table table : tables) {
+			if(table.getName()==strTableName){
+				
+			}
+		}
 	}
 
 	@Override
