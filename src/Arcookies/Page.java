@@ -17,7 +17,7 @@ public class Page  implements java.io.Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	//2D array of comparable
-	Hashtable<Integer, Comparable []>tuples;
+	String [][] tuples;
 	/*El page_id hayeb2a set men el table whenever a new page is create 
 	it's id will be "[tablename]_[page number], example student_1 page number will be incremented every time "*/	
 	String page_id;
@@ -49,16 +49,17 @@ public class Page  implements java.io.Serializable{
         return page;
 	}
 	
-	public void insertTuple(Comparable [] tuple) {
-		tuples.put(row_count, tuple);
+	public void insertTuple(String [] tuple) {
+		tuples[row_count] = tuple;
 		row_count++;
 	}
 
-	public Hashtable<Integer, Comparable[]> getTuples() {
+	
+	public String[][] getTuples() {
 		return tuples;
 	}
 
-	public void setTuples(Hashtable<Integer, Comparable[]> tuples) {
+	public void setTuples(String[][] tuples) {
 		this.tuples = tuples;
 	}
 

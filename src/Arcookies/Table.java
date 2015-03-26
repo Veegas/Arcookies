@@ -30,7 +30,7 @@ public class Table {
 		this.htblColNameType = htblColNameType;
 
 		colNameType = htblColNameType.keys();
-		Iterator it1 = ((ArrayList<String>) colNameType).iterator();
+		Iterator it1 = colNameType.iterator();
 
 		while (it1.hasNext()) {
 
