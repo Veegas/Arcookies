@@ -4,43 +4,47 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Properties;
 import net.sf.javaml.core.kdtree.*;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
 
-public class DBApp implements DBAppInterface{
-	
+public class DBApp implements DBAppInterface {
+
 	ArrayList<Table> tables = new ArrayList<Table>();
 
-	public static void main (String [] args) {
-		
-		/*try {
-			CsvController.writeCsvFile("aywa", "yalla", true, false, "la2", "int");
-			CsvController.writeCsvFile("aywa2", "yalla", true, false, "la2", "int");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}*/
-		
+	public static void main(String[] args) {
+
+		/*
+		 * try { CsvController.writeCsvFile("aywa", "yalla", true, false, "la2",
+		 * "int"); CsvController.writeCsvFile("aywa2", "yalla", true, false,
+		 * "la2", "int"); } catch (IOException e1) { // TODO Auto-generated
+		 * catch block e1.printStackTrace(); }
+		 */
+
 		try {
-			Hashtable<String, String> namesTypes
-		     = new Hashtable<String, String>();
-			
-			Hashtable<String, String> namesRefs
-		     = new Hashtable<String, String>();
-			
-			namesTypes.put("name","String");
-			namesTypes.put("tutorial","String");
-			namesTypes.put("id","int");
-			namesTypes.put("lol","int");
-			
-			namesRefs.put("tutorial","class");
-			namesRefs.put("name","student");
-			
+			Hashtable<String, String> namesTypes = new Hashtable<String, String>();
+
+			Hashtable<String, String> namesRefs = new Hashtable<String, String>();
+
+			namesTypes.put("name", "String");
+			namesTypes.put("tutorial", "String");
+			namesTypes.put("id", "int");
+			namesTypes.put("lol", "int");
+
+			namesRefs.put("tutorial", "class");
+			namesRefs.put("name", "student");
+
 			DBApp trial = new DBApp();
-			
-			
-			trial.createTable("TrialTable",namesTypes,namesRefs,"lol");
+
+			trial.createTable("TrialTable", namesTypes, namesRefs, "lol");
 			System.out.print("done");
 		} catch (DBAppException | IOException e) {
 			System.out.println("error hena");
@@ -50,8 +54,27 @@ public class DBApp implements DBAppInterface{
 
 	@Override
 	public void init() {
+
 		tables = new ArrayList<Table>();
 		tables = CsvController.readCsvFile();
+
+		try {
+			Properties prop = new Properties();
+			String configFileName = "./config/DBApp.properties";
+			InputStream input = new FileInputStream(configFileName);
+			prop.load(input);
+			int KDTreeN = Integer.parseInt(prop.getProperty("KDTreeN"));
+			int MaximumRowsCountinPage = Integer.parseInt(prop
+					.getProperty("MaximumRowsCountinPage"));
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -59,32 +82,65 @@ public class DBApp implements DBAppInterface{
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 			throws DBAppException, IOException {
+
 		
 		Table newTable = new Table( strTableName);
 		newTable.createNew(strTableName, htblColNameType, htblColNameRefs, strKeyColName);
+
 		tables.add(newTable);
-		
+
 	}
 
 	@Override
 	public void createIndex(String strTableName, String strColName)
 			throws DBAppException {
 		// TODO Auto-generated method stub
-		
+		for (Table table : tables) {
+			if (table.getName().equals(strTableName)) {
+				table.setSingleIndex(strColName);
+				for (String p : table.getPages()) {
+					try {
+						for (int i = 0; i > 0; i++) {
+							String record = table.getValueFromPage(
+									Page.loadFromDisk(p), strColName, i);
+							if (!(record == null)) {
+								table.getLHT().put(record, p);
+							} else {
+								break;
+							}
+						}
+					} catch (ClassNotFoundException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 	@Override
 	public void createMultiDimIndex(String strTableName,
 			Hashtable<String, String> htblColNames) throws DBAppException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void insertIntoTable(String strTableName,
 			Hashtable<String, String> htblColNameValue) throws DBAppException {
 		// TODO Auto-generated method stub
-		
+		for (Table table : tables) {
+			if (table.getName() == strTableName) {
+				try {
+					Page tempPage = table.insertIntoPage(htblColNameValue);
+					table.getLHT().put(table.getSingleIndex(), tempPage.getPage_id());
+
+				} catch (ClassNotFoundException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -92,7 +148,7 @@ public class DBApp implements DBAppInterface{
 			Hashtable<String, String> htblColNameValue, String strOperator)
 			throws DBEngineException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -106,6 +162,17 @@ public class DBApp implements DBAppInterface{
 	@Override
 	public void saveAll() throws DBEngineException {
 		// TODO Auto-generated method stub
-		
+		for (Table table : tables) {
+			for (Page page : table.getUsedPages()) {
+				try {
+					page.saveToDisk();
+					table.saveIndexToDisk();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
 	}
 }
