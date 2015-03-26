@@ -78,6 +78,10 @@ public class Page  implements java.io.Serializable{
 		this.row_count = row_count;
 	}
 	
+	public ArrayList<String> getRecord(int index) {
+		return tuples.get(index);
+	}
+	
 	public static void main (String [] args) throws IOException, ClassNotFoundException {
 			Page page = loadFromDisk("page_1");
 			System.out.println(page.tuples);
