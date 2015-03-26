@@ -13,27 +13,6 @@ public class DBApp implements DBAppInterface{
 	ArrayList<Table> tables = new ArrayList<Table>();
 
 	public static void main (String [] args) {
-		Hashtable<String, String> namesTypes
-	     = new Hashtable<String, String>();
-		
-		Hashtable<String, String> namesRefs
-	     = new Hashtable<String, String>();
-		
-		namesTypes.put("name","String");
-		namesTypes.put("tutorial","String");
-		namesTypes.put("id","int");
-		namesTypes.put("lol","int");
-		
-		namesRefs.put("tutorial","class");
-		namesRefs.put("name","student");
-		
-		DBApp trial = new DBApp();
-		try {
-			trial.createTable("TrialTable",namesTypes,namesRefs,"lol");
-		} catch (DBAppException | IOException e) {
-			System.out.println("error hena");
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -93,6 +72,11 @@ public class DBApp implements DBAppInterface{
 	@Override
 	public void saveAll() throws DBEngineException {
 		// TODO Auto-generated method stub
-		
+		for(Table table : tables) {
+			ArrayList<String> pages = table.getPages();
+			for(String page : pages) {
+				
+			}
+		}
 	}
 }
