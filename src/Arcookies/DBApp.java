@@ -1,9 +1,21 @@
 package Arcookies;
 
+<<<<<<< HEAD
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+=======
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Properties;
+
+>>>>>>> 1623a01d162f2864ada5d1a46ef18d801c1281fe
 import net.sf.javaml.core.kdtree.*;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
@@ -50,8 +62,23 @@ public class DBApp implements DBAppInterface{
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
+		try {
+			Properties prop = new Properties();
+			String configFileName = "./config/DBApp.properties";
+			InputStream input = new FileInputStream(configFileName);
+			prop.load(input);
+			int KDTreeN = Integer.parseInt(prop.getProperty("KDTreeN"));
+			int MaximumRowsCountinPage = Integer.parseInt(prop
+					.getProperty("MaximumRowsCountinPage"));
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -83,7 +110,17 @@ public class DBApp implements DBAppInterface{
 	public void insertIntoTable(String strTableName,
 			Hashtable<String, String> htblColNameValue) throws DBAppException {
 		// TODO Auto-generated method stub
-		
+		for (Table table : tables) {
+			if(table.getName()== strTableName){
+				try {
+					Page tempPage = table.insertIntoPage(htblColNameValue);
+					
+				} catch (ClassNotFoundException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -105,6 +142,16 @@ public class DBApp implements DBAppInterface{
 	@Override
 	public void saveAll() throws DBEngineException {
 		// TODO Auto-generated method stub
-		
+		for (Table table: tables) {
+			for(Page page: table.getUsedPages()) {
+				try {
+					page.saveToDisk();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
 	}
 }
