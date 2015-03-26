@@ -1,6 +1,5 @@
 package Arcookies;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -9,7 +8,7 @@ import exceptions.*;
 
 public interface DBAppInterface {
 
-	public void init( ) throws FileNotFoundException;
+	public void init( );
 	
 	public void createTable(String strTableName,
 	 Hashtable<String,String> htblColNameType,
