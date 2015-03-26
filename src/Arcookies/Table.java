@@ -13,9 +13,7 @@ public class Table {
 	private ArrayList<String> pages;
 	private Page latestPage;
 	private int pageCount;
-	private Hashtable<String, String> htblColNameType;
-	private Hashtable<String, String> htblColNameRefs;
-	private Set<String> colNameType;
+	
 
 	
 	public Table (String strTableName,
@@ -23,10 +21,9 @@ public class Table {
 				Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException {
 		 
 		 ArrayList<String> pages = new ArrayList<String>();
+		 
 		 pageCount = 0;
 		 this.tableName = strTableName;
-		 this.htblColNameRefs = htblColNameRefs;
-		 this.htblColNameType = htblColNameType;
 	
 		 Set nameType = htblColNameType.entrySet();
 		    Iterator it1 = nameType.iterator();
@@ -37,7 +34,11 @@ public class Table {
 			 boolean key = false;
 			 Map.Entry entry = (Map.Entry) it1.next();
 			 
-			 if (entry.getKey()== strKeyColName){
+			 System.out.println((String)entry.getValue()+" hena");
+			 
+			 
+			 
+			 if (((String)entry.getKey())== strKeyColName){
 				 key = true;
 			 }
 			 
@@ -46,7 +47,8 @@ public class Table {
 			    
 			 while(it2.hasNext()){
 				 Map.Entry entry2 = (Map.Entry) it2.next();
-				 if(entry.getKey() == entry2.getKey()){
+				 System.out.println(entry2.getValue());
+				 if((String)entry.getKey() == (String) entry2.getKey()){
 					 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,(String)(entry2.getValue()),(String)(entry.getValue()));
 				 flag = true;
 				 }
@@ -66,12 +68,7 @@ public class Table {
 		this.pages = pages;
 	}
 
-	public void insertIntoPage(Hashtable<String, String> htblColNameValue) {
-		String [] tuples = new String [colNameType.size()];
-		while (htblColNameValue.elements().hasMoreElements()) {
-			
-		}
-	}
+	
 	
 	
 }
