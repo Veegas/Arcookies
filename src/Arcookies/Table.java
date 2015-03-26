@@ -12,53 +12,59 @@ public class Table {
 
 	private String tableName;
 	private ArrayList<String> pages;
-	private Page latestPage;
+	private ArrayList<Page> usedPages;
 	private int pageCount;
-	
+	private int maxRowsPerPage;
+	private ArrayList<String> columns;
+	private String strKeyColName;
+	private LinearHashTable LHT;
 
-	
-	public Table (String strTableName,
-				Hashtable<String, String> htblColNameType,
-				Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException {
-		 
-		 ArrayList<String> pages = new ArrayList<String>();
-		 
-		 pageCount = 0;
-		 this.tableName = strTableName;
-	
-		 Set nameType = htblColNameType.entrySet();
-		    Iterator it1 = nameType.iterator();
-		 
-		 while(it1.hasNext()){
-			 
-			 boolean flag = false;
-			 boolean key = false;
-			 Map.Entry entry = (Map.Entry) it1.next();
-			 
-			 
-			 
-			 
-			 if (((String)entry.getKey())== strKeyColName){
-				 key = true;
-			 }
-			 
-			 Set nameRefs = htblColNameRefs.entrySet();
-			    Iterator it2 = nameRefs.iterator();
-			    
-			 while(it2.hasNext()){
-				 Map.Entry entry2 = (Map.Entry) it2.next();
-				 
-				 if((String)entry.getKey() == (String) entry2.getKey()){
-					 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,(String)(entry2.getValue()),(String)(entry.getValue()));
-				 flag = true;
-				 }
-			 }
-			 if(!flag){
-				 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,null,(String)entry.getValue());
-			 }
-		 }
-		 
-	 }
+	public Table(String strTableName,
+			Hashtable<String, String> htblColNameType,
+			Hashtable<String, String> htblColNameRefs, String strKeyColName)
+			throws IOException {
+		
+		ArrayList<String> pages = new ArrayList<String>();
+		setLHT(new LinearHashTable((float) 0.75, 20));
+		pageCount = 0;
+		this.tableName = strTableName;
+		this.strKeyColName = strKeyColName;
+
+		Set nameType = htblColNameType.entrySet();
+		Iterator it1 = nameType.iterator();
+		
+		while (it1.hasNext()) {
+
+			boolean flag = false;
+			boolean key = false;
+			Map.Entry entry = (Map.Entry) it1.next();
+
+			if (((String) entry.getKey()) == strKeyColName) {
+				key = true;
+			}
+
+			Set nameRefs = htblColNameRefs.entrySet();
+			Iterator it2 = nameRefs.iterator();
+
+			while (it2.hasNext()) {
+				Map.Entry entry2 = (Map.Entry) it2.next();
+
+				if ((String) entry.getKey() == (String) entry2.getKey()) {
+					CsvController.writeCsvFile(strTableName,
+							(String) entry.getKey(), key, false,
+							(String) (entry2.getValue()),
+							(String) (entry.getValue()));
+					flag = true;
+				}
+			}
+			if (!flag) {
+				CsvController.writeCsvFile(strTableName,
+						(String) entry.getKey(), key, false, null,
+						(String) entry.getValue());
+			}
+		}
+
+	}
 
 	public ArrayList<String> getPages() {
 		return pages;
@@ -67,55 +73,67 @@ public class Table {
 	public void setPages(ArrayList<String> pages) {
 		this.pages = pages;
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return this.tableName;
 	}
 
 	public void insertIntoPage(Hashtable<String, String> htblColNameValue)
 			throws IOException, ClassNotFoundException {
-		ArrayList<String> tuples = new ArrayList<String>(
-				htblColNameValue.values());
-		if (latestPage == null) {
-			try {
-				latestPage = Page.loadFromDisk(tableName + "_" + pageCount);
-			} catch (IOException e) {
-				latestPage = createNewPage();
+		ArrayList<String> record = new ArrayList<String>();
+		for(String columnHead: columns) {
+			String value = htblColNameValue.get(columnHead);
+			record.add(value);
+		}
+	}
+	
+	public String getValueFromPage(Page page, String colName, int index) {
+		int colIndex = columns.indexOf(colName);
+		return page.getRecord(index).get(colIndex);
+	}
+	
+	public ArrayList<String> getRecordFromPage(Page page, String primaryValue) {
+		int colIndex = columns.indexOf(strKeyColName);
+		ArrayList<ArrayList<String>> pageTuples = page.getTuples();
+		for(ArrayList<String> oneTuple: pageTuples) {
+			if (oneTuple.get(colIndex).equals(primaryValue)){
+				return oneTuple;
 			}
 		}
-		if (latestPage.row_count >= 200) {
-			latestPage = createNewPage();
-//			latestPage.insertTuple((Comparable[]) tuples.toArray());
-		} else {
-			// momken yekoon fih case msh handled
-//			latestPage.insertTuple((Comparable[]) tuples.toArray());
-		}
-		latestPage.saveToDisk();
+		return null;
 	}
 
 	public Page createNewPage() {
 		Page page = new Page(tableName + "_" + pageCount);
 		pageCount++;
+		usedPages.add(page);
 		return page;
 	}
 
-	public static void main (String [] args) {
+	public static void main(String[] args) {
 		Hashtable x = new Hashtable<String, String>();
 		x.put("name", "String");
 		x.put("id", "String");
-		
+
 		Hashtable y = new Hashtable<String, String>();
 		y.put("name", "");
 		y.put("id", "");
-		
+
 		try {
-			Table table = new Table("ExampleTable", x
-					, y, "id");
+			Table table = new Table("ExampleTable", x, y, "id");
 			System.out.println(table);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public LinearHashTable getLHT() {
+		return LHT;
+	}
+
+	public void setLHT(LinearHashTable lHT) {
+		LHT = lHT;
 	}
 
 }

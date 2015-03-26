@@ -1,9 +1,14 @@
 package Arcookies;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Properties;
+
 import net.sf.javaml.core.kdtree.*;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
@@ -50,8 +55,23 @@ public class DBApp implements DBAppInterface{
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
+		try {
+			Properties prop = new Properties();
+			String configFileName = "./config/DBApp.properties";
+			InputStream input = new FileInputStream(configFileName);
+			prop.load(input);
+			int KDTreeN = Integer.parseInt(prop.getProperty("KDTreeN"));
+			int MaximumRowsCountinPage = Integer.parseInt(prop
+					.getProperty("MaximumRowsCountinPage"));
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -69,7 +89,29 @@ public class DBApp implements DBAppInterface{
 	public void createIndex(String strTableName, String strColName)
 			throws DBAppException {
 		// TODO Auto-generated method stub
-		
+		for (Table table : tables) {
+			if (table.getName().equals(strTableName)){
+				for (String p : table.getPages()) {
+					try {
+						for (int i = 0; i>0; i++) {
+							String record = table.getValueFromPage(Page.loadFromDisk(p), strColName, i);
+							if (!(record==null)){
+								table.getLHT().put(record, p);
+							}
+							else{
+								break;
+							}
+							
+						}
+						
+						
+					} catch (ClassNotFoundException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 	@Override
