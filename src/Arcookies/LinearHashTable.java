@@ -1,6 +1,7 @@
 package Arcookies;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,7 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public class LinearHashTable implements Map<String, String> {
+public class LinearHashTable implements Map<String, String>, Serializable {
 
 	
 	private float loadFactor;

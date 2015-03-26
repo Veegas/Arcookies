@@ -1,6 +1,8 @@
 package Arcookies;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -18,6 +20,7 @@ public class Table {
 	private ArrayList<String> columns;
 	private String strKeyColName;
 	private LinearHashTable LHT;
+	private String singleIndex;
 
 	public Table(String strTableName,
 			Hashtable<String, String> htblColNameType,
@@ -64,6 +67,14 @@ public class Table {
 			}
 		}
 
+	}
+
+	public String getSingleIndex() {
+		return singleIndex;
+	}
+
+	public void setSingleIndex(String singleIndex) {
+		this.singleIndex = singleIndex;
 	}
 
 	public ArrayList<String> getPages() {
@@ -135,15 +146,34 @@ public class Table {
 		return page;
 	}
 
+	public LinearHashTable getLHT() {
+		return LHT;
+	}
+
+	public void setLHT(LinearHashTable lHT) {
+		LHT = lHT;
+	}
+	
+	public void saveIndexToDisk() throws IOException {
+		String filename = tableName + "_index";
+		FileOutputStream fileOut =
+		         new FileOutputStream(filename);
+		         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		         out.writeObject(this);
+		         out.close();
+		         fileOut.close();
+		         System.out.println(filename);
+	}
+
 	public static void main(String[] args) {
 		Hashtable x = new Hashtable<String, String>();
 		x.put("name", "String");
 		x.put("id", "String");
-
+	
 		Hashtable y = new Hashtable<String, String>();
 		y.put("name", "");
 		y.put("id", "");
-
+	
 		try {
 			Table table = new Table("ExampleTable", x, y, "id");
 			System.out.println(table);
@@ -151,13 +181,6 @@ public class Table {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	public LinearHashTable getLHT() {
-		return LHT;
-	}
-
-	public void setLHT(LinearHashTable lHT) {
-		LHT = lHT;
 	}
 
 }

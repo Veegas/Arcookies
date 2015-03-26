@@ -91,6 +91,7 @@ public class DBApp implements DBAppInterface {
 		// TODO Auto-generated method stub
 		for (Table table : tables) {
 			if (table.getName().equals(strTableName)) {
+				table.setSingleIndex(strColName);
 				for (String p : table.getPages()) {
 					try {
 						for (int i = 0; i > 0; i++) {
@@ -101,9 +102,7 @@ public class DBApp implements DBAppInterface {
 							} else {
 								break;
 							}
-
 						}
-
 					} catch (ClassNotFoundException | IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -128,6 +127,7 @@ public class DBApp implements DBAppInterface {
 			if (table.getName() == strTableName) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
+					table.getLHT().put(table.getSingleIndex(), tempPage.getPage_id());
 
 				} catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
@@ -160,6 +160,7 @@ public class DBApp implements DBAppInterface {
 			for (Page page : table.getUsedPages()) {
 				try {
 					page.saveToDisk();
+					table.saveIndexToDisk();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
