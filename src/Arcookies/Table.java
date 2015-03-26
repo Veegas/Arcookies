@@ -13,7 +13,8 @@ public class Table {
 	private int pageCount;
 	private Hashtable<String, String> htblColNameType;
 	private Hashtable<String, String> htblColNameRefs;
-	
+	private Set<String> colNameType;
+
 	public Table(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
@@ -24,11 +25,10 @@ public class Table {
 		this.tableName = strTableName;
 		this.htblColNameRefs = htblColNameRefs;
 		this.htblColNameType = htblColNameType;
-		
-		
+
 		ArrayList<String> types = new ArrayList<String>(
 				htblColNameType.values());
-		Set<String> colNameType = htblColNameType.keySet();
+		colNameType = htblColNameType.keySet();
 
 		ArrayList<String> refs = new ArrayList<String>(htblColNameRefs.values());
 		Set<String> colNameRefs = htblColNameType.keySet();
@@ -59,4 +59,10 @@ public class Table {
 		this.pages = pages;
 	}
 
+	public void insertIntoPage(Hashtable<String, String> htblColNameValue) {
+		String [] tuples = new String [colNameType.size()];
+		while (htblColNameValue.elements().hasMoreElements()) {
+			
+		}
+	}
 }
