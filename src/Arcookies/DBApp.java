@@ -13,6 +13,39 @@ public class DBApp implements DBAppInterface{
 	ArrayList<Table> tables = new ArrayList<Table>();
 
 	public static void main (String [] args) {
+		
+		/*try {
+			CsvController.writeCsvFile("aywa", "yalla", true, false, "la2", "int");
+			CsvController.writeCsvFile("aywa2", "yalla", true, false, "la2", "int");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+		
+		try {
+			Hashtable<String, String> namesTypes
+		     = new Hashtable<String, String>();
+			
+			Hashtable<String, String> namesRefs
+		     = new Hashtable<String, String>();
+			
+			namesTypes.put("name","String");
+			namesTypes.put("tutorial","String");
+			namesTypes.put("id","int");
+			namesTypes.put("lol","int");
+			
+			namesRefs.put("tutorial","class");
+			namesRefs.put("name","student");
+			
+			DBApp trial = new DBApp();
+			
+			
+			trial.createTable("TrialTable",namesTypes,namesRefs,"lol");
+			System.out.print("done");
+		} catch (DBAppException | IOException e) {
+			System.out.println("error hena");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -72,11 +105,6 @@ public class DBApp implements DBAppInterface{
 	@Override
 	public void saveAll() throws DBEngineException {
 		// TODO Auto-generated method stub
-		for(Table table : tables) {
-			ArrayList<String> pages = table.getPages();
-			for(String page : pages) {
-				
-			}
-		}
+		
 	}
 }

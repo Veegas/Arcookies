@@ -14,55 +14,50 @@ public class Table {
 	private ArrayList<String> pages;
 	private Page latestPage;
 	private int pageCount;
-	private Hashtable<String, String> htblColNameType;
-	private Hashtable<String, String> htblColNameRefs;
-	private Enumeration<String> colNameType;
 
-	public Table(String strTableName,
-			Hashtable<String, String> htblColNameType,
-			Hashtable<String, String> htblColNameRefs, String strKeyColName)
-			throws IOException {
-
-		ArrayList<String> pages = new ArrayList<String>();
-		pageCount = 0;
-		this.tableName = strTableName;
-		this.htblColNameRefs = htblColNameRefs;
-		this.htblColNameType = htblColNameType;
-
-		colNameType = htblColNameType.keys();
-		Iterator it1 = colNameType.iterator();
-
-		while (it1.hasNext()) {
-
-			boolean flag = false;
-			boolean key = false;
-			Map.Entry entry = (Map.Entry) it1.next();
-
-			if (entry.getKey() == strKeyColName) {
-				key = true;
-			}
-
-			Set nameRefs = htblColNameRefs.entrySet();
-			Iterator it2 = nameRefs.iterator();
-
-			while (it2.hasNext()) {
-				Map.Entry entry2 = (Map.Entry) it2.next();
-				if (entry.getKey() == entry2.getKey()) {
-					CsvController.writeCsvFile(strTableName,
-							(String) entry.getKey(), key, false,
-							(String) (entry2.getValue()),
-							(String) (entry.getValue()));
-					flag = true;
-				}
-			}
-			if (!flag) {
-				CsvController.writeCsvFile(strTableName,
-						(String) entry.getKey(), key, false, null,
-						(String) entry.getValue());
-			}
-		}
-
-	}
+	
+	public Table (String strTableName,
+				Hashtable<String, String> htblColNameType,
+				Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException {
+		 
+		 ArrayList<String> pages = new ArrayList<String>();
+		 
+		 pageCount = 0;
+		 this.tableName = strTableName;
+	
+		 Set nameType = htblColNameType.entrySet();
+		    Iterator it1 = nameType.iterator();
+		 
+		 while(it1.hasNext()){
+			 
+			 boolean flag = false;
+			 boolean key = false;
+			 Map.Entry entry = (Map.Entry) it1.next();
+			 
+			 
+			 
+			 
+			 if (((String)entry.getKey())== strKeyColName){
+				 key = true;
+			 }
+			 
+			 Set nameRefs = htblColNameRefs.entrySet();
+			    Iterator it2 = nameRefs.iterator();
+			    
+			 while(it2.hasNext()){
+				 Map.Entry entry2 = (Map.Entry) it2.next();
+				 
+				 if((String)entry.getKey() == (String) entry2.getKey()){
+					 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,(String)(entry2.getValue()),(String)(entry.getValue()));
+				 flag = true;
+				 }
+			 }
+			 if(!flag){
+				 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,null,(String)entry.getValue());
+			 }
+		 }
+		 
+	 }
 
 	public ArrayList<String> getPages() {
 		return pages;
@@ -85,10 +80,10 @@ public class Table {
 		}
 		if (latestPage.row_count >= 200) {
 			latestPage = createNewPage();
-			latestPage.insertTuple((Comparable[]) tuples.toArray());
+//			latestPage.insertTuple((Comparable[]) tuples.toArray());
 		} else {
 			// momken yekoon fih case msh handled
-			latestPage.insertTuple((Comparable[]) tuples.toArray());
+//			latestPage.insertTuple((Comparable[]) tuples.toArray());
 		}
 		latestPage.saveToDisk();
 	}
@@ -117,4 +112,5 @@ public class Table {
 			e.printStackTrace();
 		}
 	}
+
 }
