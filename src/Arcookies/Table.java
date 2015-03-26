@@ -14,19 +14,25 @@ public class Table {
 	private ArrayList<String> pages;
 	private Page latestPage;
 	private int pageCount;
+	private ArrayList<String> columns;
 
 	
 
 	
-	public Table (String strTableName,
-				Hashtable<String, String> htblColNameType,
-				Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException {
+	public Table (String strTableName) throws IOException {
 		 
 		 ArrayList<String> pages = new ArrayList<String>();
 		 
 		 pageCount = 0;
 		 this.tableName = strTableName;
 	
+		
+	 }
+	
+	public void createNew(String strTableName,
+			Hashtable<String, String> htblColNameType,
+			Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException{
+		
 		 Set nameType = htblColNameType.entrySet();
 		    Iterator it1 = nameType.iterator();
 		 
@@ -35,7 +41,7 @@ public class Table {
 			 boolean flag = false;
 			 boolean key = false;
 			 Map.Entry entry = (Map.Entry) it1.next();
-			 
+			 columns.add((String)entry.getKey());
 			 
 			 
 			 
@@ -58,8 +64,7 @@ public class Table {
 				 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,null,(String)entry.getValue());
 			 }
 		 }
-		 
-	 }
+	}
 
 	public ArrayList<String> getPages() {
 		return pages;
@@ -95,24 +100,43 @@ public class Table {
 		pageCount++;
 		return page;
 	}
+	
+	
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public Page getLatestPage() {
+		return latestPage;
+	}
+
+	public void setLatestPage(Page latestPage) {
+		this.latestPage = latestPage;
+	}
+
+	public int getPageCount() {
+		return pageCount;
+	}
+
+	public void setPageCount(int pageCount) {
+		this.pageCount = pageCount;
+	}
+
+	public ArrayList<String> getColumns() {
+		return columns;
+	}
+
+	public void setColumns(ArrayList<String> columns) {
+		this.columns = columns;
+	}
 
 	public static void main (String [] args) {
-		Hashtable x = new Hashtable<String, String>();
-		x.put("name", "String");
-		x.put("id", "String");
 		
-		Hashtable y = new Hashtable<String, String>();
-		y.put("name", "");
-		y.put("id", "");
-		
-		try {
-			Table table = new Table("ExampleTable", x
-					, y, "id");
-			System.out.println(table);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }

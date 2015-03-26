@@ -50,8 +50,8 @@ public class DBApp implements DBAppInterface{
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
+		tables = new ArrayList<Table>();
+		tables = CsvController.readCsvFile();
 	}
 
 	@Override
@@ -60,7 +60,8 @@ public class DBApp implements DBAppInterface{
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 			throws DBAppException, IOException {
 		
-		Table newTable = new Table( strTableName,htblColNameType, htblColNameRefs,strKeyColName);
+		Table newTable = new Table( strTableName);
+		newTable.createNew(strTableName, htblColNameType, htblColNameRefs, strKeyColName);
 		tables.add(newTable);
 		
 	}
