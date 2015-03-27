@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.javaml.core.kdtree.KDTree;
+
 public class Table {
 
 	private String tableName;
@@ -21,30 +23,30 @@ public class Table {
 	private ArrayList<String> columns;
 	private String strKeyColName;
 	private LinearHashTable LHT;
-	private String singleIndex;
 	private ArrayList <String> multiIndex;
+	private String singleIndexedCol;
+	private KDTree KDT;
 
 	
-
-	
-	public Table (String strTableName) throws IOException {
+	public Table (String strTableName, int maxRowsPerPage) throws IOException {
 		 
 		 ArrayList<String> pages = new ArrayList<String>();
-		 
 		 pageCount = 0;
 		 this.tableName = strTableName;
+		 this.maxRowsPerPage = maxRowsPerPage;
+		 pages = new ArrayList<String>();
+		 usedPages = new ArrayList<Page>();
+		 columns = new ArrayList<String>();
+		 LHT = new LinearHashTable((float) 0.75, 200);
 	
-		
 	 }
 	
 	public void createNew(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException{
-		ArrayList<String> pages = new ArrayList<String>();
-		setLHT(new LinearHashTable((float) 0.75, 20));
-		pageCount = 0;
-		this.tableName = strTableName;
+		
 		this.strKeyColName = strKeyColName;
+		
 		Set nameType = htblColNameType.entrySet();
 		    Iterator it1 = nameType.iterator();
 		 
@@ -77,17 +79,8 @@ public class Table {
 			 }
 		 }
 		
-
 	}
-
-	public String getSingleIndex() {
-		return singleIndex;
-	}
-
-	public void setSingleIndex(String singleIndex) {
-		this.singleIndex = singleIndex;
-	}
-
+	
 	public ArrayList<String> getPages() {
 		return pages;
 	}
@@ -123,6 +116,7 @@ public class Table {
 			String value = htblColNameValue.get(columnHead);
 			record.add(value);
 		}
+	
 		Page lastPage = Page.loadFromDisk(tableName + "_" + pageCount);
 		if(lastPage == null || lastPage.getRow_count() >= maxRowsPerPage) {
 			lastPage = createNewPage();
@@ -154,6 +148,7 @@ public class Table {
 		pageCount++;
 
 		Page page = new Page(tableName + "_" + pageCount);
+		System.out.println("ABC");
 		usedPages.add(page);
 		return page;
 	}
@@ -215,13 +210,6 @@ public class Table {
 		y.put("name", "");
 		y.put("id", "");
 	
-		try {
-			Table table = new Table("ExampleTable");
-			System.out.println(table);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public ArrayList<String> getMultiIndex() {
@@ -230,6 +218,22 @@ public class Table {
 
 	public void setMultiIndex(ArrayList<String> multiIndex) {
 		this.multiIndex = multiIndex;
+	}
+
+	public String getSingleIndexedCol() {
+		return singleIndexedCol;
+	}
+
+	public void setSingleIndexedCol(String singleIndexedCol) {
+		this.singleIndexedCol = singleIndexedCol;
+	}
+
+	public KDTree getKDT() {
+		return KDT;
+	}
+
+	public void setKDT(int dim) {
+		KDT = new KDTree(dim);
 	}
 
 }
