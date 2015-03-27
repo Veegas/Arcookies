@@ -207,6 +207,7 @@ public class DBApp implements DBAppInterface {
 			if (table.getName().equalsIgnoreCase(strTableName)) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
+					tempPage.saveToDisk();
 				} catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
