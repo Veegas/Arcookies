@@ -20,6 +20,7 @@ public class Page  implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	//2D array of comparable
 	ArrayList<ArrayList<String>> tuples;
+	ArrayList<Boolean> tombstone;
 	/*El page_id hayeb2a set men el table whenever a new page is create 
 	it's id will be "[tablename]_[page number], example student_1 page number will be incremented every time "*/	
 	String page_id;
@@ -30,6 +31,7 @@ public class Page  implements java.io.Serializable{
 		this.page_id = page_id;
 		row_count = 0;
 		tuples = new ArrayList(new ArrayList<String>()); 
+		tombstone = new ArrayList<Boolean>();
 	}
 
 	public void saveToDisk() throws IOException {
@@ -61,6 +63,7 @@ public class Page  implements java.io.Serializable{
 	
 	public void insertTuple(ArrayList<String> tuple) {
 		tuples.add(tuple);
+		tombstone.add(false);
 	}
 	
 	public ArrayList<ArrayList<String>> getTuples() {
@@ -69,6 +72,9 @@ public class Page  implements java.io.Serializable{
 
 	public void setTuples(ArrayList<ArrayList<String>> tuples) {
 		this.tuples = tuples;
+		for(ArrayList<String> tuple: tuples) {
+			tombstone.add(false);
+		}
 	}
 
 	public String getPage_id() {
@@ -90,6 +96,16 @@ public class Page  implements java.io.Serializable{
 	public ArrayList<String> getRecord(int index) {
 		return tuples.get(index);
 	}
+	
+	public boolean isDeleted(ArrayList<String> record) {
+		int i = tuples.indexOf(record);
+		return tombstone.get(i);
+	}
+	public void DeleteRecord(ArrayList<String> record) {
+		int i = tuples.indexOf(record);
+		tombstone.set(i, true);
+	}
+	
 	
 	public static void main (String [] args) throws IOException, ClassNotFoundException {
 			Page page = loadFromDisk("page_1");
