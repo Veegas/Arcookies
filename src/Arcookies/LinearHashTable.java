@@ -281,11 +281,7 @@ public class LinearHashTable implements Map<String, String>, Serializable {
 			return key;
 		}
 
-		/**
-         * @param value
-         * @return
-         * @uml.property  name="value"
-         */
+
 		@Override
 		public String setValue(String value) {
 			String old = this.value;

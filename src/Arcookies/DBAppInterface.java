@@ -44,7 +44,7 @@ public interface DBAppInterface {
 			public Iterator selectFromTable(String strTable,
 			Hashtable<String,String> htblColNameValue,
 			String strOperator)
-			throws DBEngineException;
+			throws DBEngineException, ClassNotFoundException;
 			
 			
 			public void saveAll( ) throws DBEngineException ;
