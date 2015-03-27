@@ -20,11 +20,11 @@ public class Table {
 	private ArrayList<String> columns;
 	private String strKeyColName;
 	private LinearHashTable LHT;
-	private String singleIndex;
+	private String singleIndexedCol;
 
 	public Table(String strTableName,
 			Hashtable<String, String> htblColNameType,
-			Hashtable<String, String> htblColNameRefs, String strKeyColName)
+			Hashtable<String, String> htblColNameRefs, String strKeyColName, int maxRowsPerPage)
 			throws IOException {
 
 		ArrayList<String> pages = new ArrayList<String>();
@@ -32,7 +32,24 @@ public class Table {
 		pageCount = 0;
 		this.tableName = strTableName;
 		this.strKeyColName = strKeyColName;
+		this.maxRowsPerPage = maxRowsPerPage;
+		columns = new ArrayList<String>(); 
+		usedPages = new ArrayList<Page>();
+		
+		Iterator colNames = htblColNameType.keySet().iterator();
+		
+		while(colNames.hasNext()) {
+			String column  = (String) colNames.next();
+			columns.add(column);
+		}
+		
+		
+	}
 
+	public void writeMetaData(String strTableName,
+			Hashtable<String, String> htblColNameType,
+			Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException {
+		
 		Set nameType = htblColNameType.entrySet();
 		Iterator it1 = nameType.iterator();
 
@@ -66,15 +83,13 @@ public class Table {
 						(String) entry.getValue());
 			}
 		}
-
 	}
-
 	public String getSingleIndex() {
-		return singleIndex;
+		return singleIndexedCol;
 	}
 
 	public void setSingleIndex(String singleIndex) {
-		this.singleIndex = singleIndex;
+		this.singleIndexedCol = singleIndex;
 	}
 
 	public ArrayList<String> getPages() {
@@ -112,6 +127,7 @@ public class Table {
 			String value = htblColNameValue.get(columnHead);
 			record.add(value);
 		}
+	
 		Page lastPage = Page.loadFromDisk(tableName + "_" + pageCount);
 		if(lastPage == null || lastPage.getRow_count() >= maxRowsPerPage) {
 			lastPage = createNewPage();
@@ -142,6 +158,7 @@ public class Table {
 	public Page createNewPage() {
 		pageCount++;
 		Page page = new Page(tableName + "_" + pageCount);
+		System.out.println("ABC");
 		usedPages.add(page);
 		return page;
 	}
@@ -175,7 +192,7 @@ public class Table {
 		y.put("id", "");
 	
 		try {
-			Table table = new Table("ExampleTable", x, y, "id");
+			Table table = new Table("ExampleTable", x, y, "id", 20);
 			System.out.println(table);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

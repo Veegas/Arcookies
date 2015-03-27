@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
+
 import net.sf.javaml.core.kdtree.*;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
@@ -19,33 +20,38 @@ import exceptions.DBEngineException;
 public class DBApp implements DBAppInterface {
 
 	ArrayList<Table> tables = new ArrayList<Table>();
+	int KDTreeN;
+	int MaximumRowsCountinPage;
 
 	public static void main(String[] args) {
-
-		/*
-		 * try { CsvController.writeCsvFile("aywa", "yalla", true, false, "la2",
-		 * "int"); CsvController.writeCsvFile("aywa2", "yalla", true, false,
-		 * "la2", "int"); } catch (IOException e1) { // TODO Auto-generated
-		 * catch block e1.printStackTrace(); }
-		 */
 
 		try {
 			Hashtable<String, String> namesTypes = new Hashtable<String, String>();
 
 			Hashtable<String, String> namesRefs = new Hashtable<String, String>();
 
+			Hashtable<String, String> namesValues = new Hashtable<String, String>();
 			namesTypes.put("name", "String");
 			namesTypes.put("tutorial", "String");
-			namesTypes.put("id", "int");
-			namesTypes.put("lol", "int");
+			namesTypes.put("id", "String");
+			namesTypes.put("lol", "String");
 
 			namesRefs.put("tutorial", "class");
 			namesRefs.put("name", "student");
 
-			DBApp trial = new DBApp();
+			namesValues.put("name", "test");
+			namesValues.put("tutorial", "test");
+			namesValues.put("id", "test");
+			namesValues.put("lol", "test");
 
-			trial.createTable("TrialTable", namesTypes, namesRefs, "lol");
+			DBApp app = new DBApp();
+			app.init();
+
+			app.createTable("TrialTable", namesTypes, namesRefs, "id");
 			System.out.print("done");
+			app.insertIntoTable("TrialTable", namesValues);
+			System.out.print("inserted");
+
 		} catch (DBAppException | IOException e) {
 			System.out.println("error hena");
 			e.printStackTrace();
@@ -59,8 +65,8 @@ public class DBApp implements DBAppInterface {
 			String configFileName = "./config/DBApp.properties";
 			InputStream input = new FileInputStream(configFileName);
 			prop.load(input);
-			int KDTreeN = Integer.parseInt(prop.getProperty("KDTreeN"));
-			int MaximumRowsCountinPage = Integer.parseInt(prop
+			KDTreeN = Integer.parseInt(prop.getProperty("KDTreeN"));
+			MaximumRowsCountinPage = Integer.parseInt(prop
 					.getProperty("MaximumRowsCountinPage"));
 
 		} catch (FileNotFoundException e) {
@@ -80,8 +86,13 @@ public class DBApp implements DBAppInterface {
 			throws DBAppException, IOException {
 
 		Table newTable = new Table(strTableName, htblColNameType,
-				htblColNameRefs, strKeyColName);
-		tables.add(newTable);
+				htblColNameRefs, strKeyColName, MaximumRowsCountinPage);
+
+		if (!tables.contains(newTable)) {
+			tables.add(newTable);
+			newTable.writeMetaData(strTableName, htblColNameType,
+					htblColNameRefs, strKeyColName);
+		}
 
 	}
 
@@ -103,7 +114,7 @@ public class DBApp implements DBAppInterface {
 								break;
 							}
 						}
-					} catch (ClassNotFoundException | IOException e) {
+					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -127,7 +138,8 @@ public class DBApp implements DBAppInterface {
 			if (table.getName() == strTableName) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
-					table.getLHT().put(table.getSingleIndex(), tempPage.getPage_id());
+//					table.getLHT().put(table.getSingleIndex(),
+//							tempPage.getPage_id());
 
 				} catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
