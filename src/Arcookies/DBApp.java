@@ -82,8 +82,7 @@ public class DBApp implements DBAppInterface {
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 			throws DBAppException, IOException {
-
-		
+	
 		Table newTable = new Table( strTableName);
 		newTable.createNew(strTableName, htblColNameType, htblColNameRefs, strKeyColName);
 
