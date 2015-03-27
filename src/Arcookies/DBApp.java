@@ -153,7 +153,7 @@ public class DBApp implements DBAppInterface {
 			Hashtable<String, String> htblColNameValue) throws DBAppException {
 		// TODO Auto-generated method stub
 		for (Table table : tables) {
-			if (table.getName() == strTableName) {
+			if (table.getName().equalsIgnoreCase(strTableName)) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
 					table.getLHT().put(table.getSingleIndex(),
