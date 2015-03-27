@@ -3,12 +3,15 @@ package Arcookies;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import net.sf.javaml.core.kdtree.KDTree;
 
 public class Table {
 
@@ -20,19 +23,14 @@ public class Table {
 	private ArrayList<String> columns;
 	private String strKeyColName;
 	private LinearHashTable LHT;
+	private ArrayList <String> multiIndex;
 	private String singleIndexedCol;
-
-
-/*	public Table(String strTableName,
-			Hashtable<String, String> htblColNameType,
-			Hashtable<String, String> htblColNameRefs, String strKeyColName, int maxRowsPerPage)
-			throws IOException {*/
+	private KDTree KDT;
 
 	
 	public Table (String strTableName, int maxRowsPerPage) throws IOException {
 		 
 		 ArrayList<String> pages = new ArrayList<String>();
-		 
 		 pageCount = 0;
 		 this.tableName = strTableName;
 		 this.maxRowsPerPage = maxRowsPerPage;
@@ -41,7 +39,6 @@ public class Table {
 		 columns = new ArrayList<String>();
 		 LHT = new LinearHashTable((float) 0.75, 200);
 	
-		
 	 }
 	
 	public void createNew(String strTableName,
@@ -83,14 +80,7 @@ public class Table {
 		 }
 		
 	}
-	public String getSingleIndex() {
-		return singleIndexedCol;
-	}
-
-	public void setSingleIndex(String singleIndex) {
-		this.singleIndexedCol = singleIndex;
-	}
-
+	
 	public ArrayList<String> getPages() {
 		return pages;
 	}
@@ -220,6 +210,30 @@ public class Table {
 		y.put("name", "");
 		y.put("id", "");
 	
+	}
+
+	public ArrayList<String> getMultiIndex() {
+		return multiIndex;
+	}
+
+	public void setMultiIndex(ArrayList<String> multiIndex) {
+		this.multiIndex = multiIndex;
+	}
+
+	public String getSingleIndexedCol() {
+		return singleIndexedCol;
+	}
+
+	public void setSingleIndexedCol(String singleIndexedCol) {
+		this.singleIndexedCol = singleIndexedCol;
+	}
+
+	public KDTree getKDT() {
+		return KDT;
+	}
+
+	public void setKDT(int dim) {
+		KDT = new KDTree(dim);
 	}
 
 }

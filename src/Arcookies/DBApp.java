@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
@@ -17,7 +18,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
 
-import net.sf.javaml.core.kdtree.*;
+
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
 
@@ -118,7 +119,7 @@ public class DBApp implements DBAppInterface {
 		// TODO Auto-generated method stub
 		for (Table table : tables) {
 			if (table.getName().equals(strTableName)) {
-				table.setSingleIndex(strColName);
+				table.setSingleIndexedCol(strColName);
 				for (String p : table.getPages()) {
 					try {
 						for (int i = 0; i > 0; i++) {
@@ -145,7 +146,36 @@ public class DBApp implements DBAppInterface {
 	public void createMultiDimIndex(String strTableName,
 			Hashtable<String, String> htblColNames) throws DBAppException {
 		// TODO Auto-generated method stub
+		for (Table table : tables) {
+			if (table.getName().equals(strTableName)) {
+				if(table.getSingleIndexedCol().equals(null)){
+					
+					Enumeration<String> colNames= htblColNames.keys();
+					String col0 = colNames.nextElement();
+					String col1 = htblColNames.get(col0);
+					for (String p : table.getPages()) {
+						try {
+							for (int i = 0; i > 0; i++) {
+								String recordCol0 = table.getValueFromPage(
+										Page.loadFromDisk(p), col0, i);
+								String recordCol1 = table.getValueFromPage(
+										Page.loadFromDisk(p), col1, i);
+								if (!(recordCol0 ==null || recordCol1 == null)) {
+						
+								} else {
+									break;
+								}
 
+							}
+						} catch (ClassNotFoundException e) {
+
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -156,7 +186,7 @@ public class DBApp implements DBAppInterface {
 			if (table.getName().equalsIgnoreCase(strTableName)) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
-					table.getLHT().put(table.getSingleIndex(),
+					table.getLHT().put(table.getSingleIndexedCol(),
 							tempPage.getPage_id());
 
 				} catch (ClassNotFoundException | IOException e) {
