@@ -29,12 +29,17 @@ public class Table {
 			throws IOException {*/
 
 	
-	public Table (String strTableName) throws IOException {
+	public Table (String strTableName, int maxRowsPerPage) throws IOException {
 		 
 		 ArrayList<String> pages = new ArrayList<String>();
 		 
 		 pageCount = 0;
 		 this.tableName = strTableName;
+		 this.maxRowsPerPage = maxRowsPerPage;
+		 pages = new ArrayList<String>();
+		 usedPages = new ArrayList<Page>();
+		 columns = new ArrayList<String>();
+		 LHT = new LinearHashTable((float) 0.75, 200);
 	
 		
 	 }
@@ -42,10 +47,7 @@ public class Table {
 	public void createNew(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException{
-		ArrayList<String> pages = new ArrayList<String>();
-		setLHT(new LinearHashTable((float) 0.75, 20));
-		pageCount = 0;
-		this.tableName = strTableName;
+		
 		this.strKeyColName = strKeyColName;
 		
 		Set nameType = htblColNameType.entrySet();
@@ -218,13 +220,6 @@ public class Table {
 		y.put("name", "");
 		y.put("id", "");
 	
-		try {
-			Table table = new Table("ExampleTable", x, y, "id", 20);
-			System.out.println(table);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }

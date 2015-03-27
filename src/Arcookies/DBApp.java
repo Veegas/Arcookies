@@ -64,9 +64,7 @@ public class DBApp implements DBAppInterface {
 
 	@Override
 	public void init() {
-		tables = new ArrayList<Table>();
-		tables = CsvController.readCsvFile();
-
+		
 		try {
 			Properties prop = new Properties();
 			String configFileName = "./config/DBApp.properties";
@@ -75,6 +73,9 @@ public class DBApp implements DBAppInterface {
 			KDTreeN = Integer.parseInt(prop.getProperty("KDTreeN"));
 			MaximumRowsCountinPage = Integer.parseInt(prop
 					.getProperty("MaximumRowsCountinPage"));
+			
+			tables = new ArrayList<Table>();
+			tables = CsvController.readCsvFile(MaximumRowsCountinPage);
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -91,21 +92,16 @@ public class DBApp implements DBAppInterface {
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 			throws DBAppException, IOException {
-
-		Table newTable = new Table(strTableName);
+		
+		/*
+		3ayzeen nezawed eno yeshoof fel metadata law
+		esm el table dah mawgood abl kda ye throw exception
+		*/
+		Table newTable = new Table(strTableName, MaximumRowsCountinPage);
 		newTable.createNew(strTableName, htblColNameType, htblColNameRefs,
 				strKeyColName);
 
 		tables.add(newTable);
-
-		/*
-		 * Table newTable = new Table(strTableName, htblColNameType,
-		 * htblColNameRefs, strKeyColName, MaximumRowsCountinPage);
-		 * 
-		 * if (!tables.contains(newTable)) { tables.add(newTable);
-		 * newTable.writeMetaData(strTableName, htblColNameType,
-		 * htblColNameRefs, strKeyColName); }
-		 */
 
 	}
 

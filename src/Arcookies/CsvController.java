@@ -56,7 +56,7 @@ public class CsvController {
 
 	}
 
-	public static ArrayList<Table> readCsvFile() {
+	public static ArrayList<Table> readCsvFile(int maxRowCount) {
 
 		BufferedReader fileReader = null;
 
@@ -82,7 +82,7 @@ public class CsvController {
 				if (tokens.length > 0) {
 
 					// Create a new table object and fill his data
-					Table table = new Table(tokens[0]);
+					Table table = new Table(tokens[0], maxRowCount);
 					if (tables.contains(table)) {
 						table.getColumns().add(tokens[1]);
 					} else {
