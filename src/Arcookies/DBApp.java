@@ -175,27 +175,28 @@ public class DBApp implements DBAppInterface {
 					table.setKDT(htblColNames.size());// 2 hardcoded as hashtable has 2
 									// strings(columns) only
 					KDTree tree = table.getKDT();
-					Enumeration<String> colNames = htblColNames.keys();
-					
 					double [] keys = new double[htblColNames.size()];
 					for (String p : table.getPages()) {
-						Page current = Page.loadFromDisk(p);
-						for (int i = 0; i > 0; i++) {
-							int columnIndex = table.getColumns().indexOf(colNames.nextElement());
-							String record = table.getValueFromPage(current
-										, colNames.nextElement(), i);
-								
-							}
-						
-							String record = 
-							if (!(record == null)) {
-								tree.insert(keys, p);
-							} else {
-								break;
-							}	
+						Page current;
+						try {
+							current = Page.loadFromDisk(p);
+							for (int i = 0; i < current.getRow_count(); i++) {
+							Enumeration<String> colNames = htblColNames.keys();
+							String currentColName = colNames.nextElement();
+							for (int k = 0; k < htblColNames.size(); k++) {
+								String record = table.getValueFromPage(current
+										,colNames.nextElement(), i);
+								keys[k] = Double.parseDouble(record);
+								tree.insert(keys, p);	
 						}
 					}
+						} catch (ClassNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
 				}
+			}
 			}
 		}
 	}
@@ -249,20 +250,20 @@ public class DBApp implements DBAppInterface {
 		}
 	}
 
-	public static double AlphabetsToFloat(String s) {
+	/*public static double AlphabetsToFloat(String s) {
 		byte[] encoded = s.getBytes(StandardCharsets.UTF_8);
 
 		for (byte c : encoded) {
 
 		}
 
-		/*
-		 * s=s.toLowerCase(); StringBuilder sb = new StringBuilder(); for (char
-		 * c : s.toCharArray()) { sb.append((char) (c - 'a' + 1)); } String b =
-		 * ""; for (int i = 0; i < sb.length(); i++) { b = b +
-		 * (sb.codePointAt(i)); }
-		 */
+		
+		 s=s.toLowerCase(); StringBuilder sb = new StringBuilder(); for (char
+		 c : s.toCharArray()) { sb.append((char) (c - 'a' + 1)); } String b =
+		 ""; for (int i = 0; i < sb.length(); i++) { b = b +
+		 (sb.codePointAt(i)); }
+		 
 		return Float.parseFloat(c);
 	}
-
+*/
 }
