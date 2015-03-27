@@ -3,6 +3,7 @@ package Arcookies;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -21,6 +22,7 @@ public class Table {
 	private String strKeyColName;
 	private LinearHashTable LHT;
 	private String singleIndex;
+	private ArrayList <String> multiIndex;
 
 	
 
@@ -220,6 +222,14 @@ public class Table {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public ArrayList<String> getMultiIndex() {
+		return multiIndex;
+	}
+
+	public void setMultiIndex(ArrayList<String> multiIndex) {
+		this.multiIndex = multiIndex;
 	}
 
 }
