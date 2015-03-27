@@ -30,11 +30,10 @@ public class Table {
 	
 	public Table (String strTableName, int maxRowsPerPage) throws IOException {
 		 
-		 ArrayList<String> pages = new ArrayList<String>();
 		 pageCount = 0;
 		 this.tableName = strTableName;
 		 this.maxRowsPerPage = maxRowsPerPage;
-		 pages = new ArrayList<String>();
+		 this.pages = new ArrayList<String>();
 		 usedPages = new ArrayList<Page>();
 		 columns = new ArrayList<String>();
 		 LHT = new LinearHashTable((float) 0.75, 200);
@@ -150,6 +149,7 @@ public class Table {
 		Page page = new Page(tableName + "_" + pageCount);
 		System.out.println("ABC");
 		usedPages.add(page);
+		pages.add(""+pageCount);
 		return page;
 	}
 	
@@ -234,6 +234,10 @@ public class Table {
 
 	public void setKDT(int dim) {
 		KDT = new KDTree(dim);
+	}
+	
+	public void addPages(String s){
+		pages.add(s);
 	}
 
 }
