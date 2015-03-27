@@ -30,7 +30,6 @@ public class Table {
 	
 	public Table (String strTableName, int maxRowsPerPage) throws IOException {
 		 
-		 ArrayList<String> pages = new ArrayList<String>();
 		 pageCount = 0;
 		 this.tableName = strTableName;
 		 this.maxRowsPerPage = maxRowsPerPage;
@@ -112,6 +111,7 @@ public class Table {
 	public Page insertIntoPage(Hashtable<String, String> htblColNameValue)
 			throws IOException, ClassNotFoundException {
 		ArrayList<String> record = new ArrayList<String>();
+		System.out.println("COLUMNS " + columns);
 		for(String columnHead: columns) {
 			String value = htblColNameValue.get(columnHead);
 			record.add(value);
@@ -146,9 +146,7 @@ public class Table {
 
 	public Page createNewPage() {
 		pageCount++;
-
 		Page page = new Page(tableName + "_" + pageCount);
-		System.out.println("ABC");
 		usedPages.add(page);
 		return page;
 	}

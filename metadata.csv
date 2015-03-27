@@ -4,3 +4,11 @@ TrialTable,name,false,false,TrialTable,student
 TrialTable,tutorial,false,false,TrialTable,class
 TrialTable,id,true,false,TrialTable,null
 TrialTable,lol,false,false,TrialTable,null
+TrialTable,lol,false,false,TrialTable,null
+TrialTable,name,false,false,TrialTable,student
+TrialTable,tutorial,false,false,TrialTable,class
+TrialTable,id,true,false,TrialTable,null
+TrialTable,lol,false,false,TrialTable,null
+TrialTable,name,false,false,TrialTable,student
+TrialTable,tutorial,false,false,TrialTable,class
+TrialTable,id,true,false,TrialTable,null

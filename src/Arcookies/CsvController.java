@@ -92,6 +92,7 @@ public class CsvController {
                    }
 					
 					if (alreadyExists) {
+						if (!tempTable.getColumns().contains(tokens[1]))
 						tempTable.getColumns().add(tokens[1]);
 					} else {
 						Table table = new Table(tokens[0], maxRowCount);

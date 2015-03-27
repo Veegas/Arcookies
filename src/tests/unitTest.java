@@ -66,8 +66,31 @@ public class unitTest {
 		Page page = app.getTables().get(0).insertIntoPage(namesValues);
 		
 		System.out.println("PAGE ROW COUNT" + page.getRecord(0));
+		System.out.println(app.getTables().get(0).getColumns());
+		Assert.assertEquals(4, app.getTables().get(0).getColumns().size());
 		Assert.assertEquals(array, page.getRecord(0));
 		
+		
+	}
+	@Test(timeout = 1000)
+	public void testIndexData() throws DBAppException {
+		
+		DBApp app = new DBApp();
+		app.init();
+		
+		Hashtable<String, String> namesValues = new Hashtable<String, String>();
+		namesValues.put("name", "testname");
+		namesValues.put("tutorial", "testtutorial");
+		namesValues.put("id", "testid");
+		namesValues.put("lol", "testlol");
+		
+		ArrayList<String> array = new ArrayList<String>(namesValues.values());
+		app.insertIntoTable("TrialTable", namesValues);
+		
+		app.createIndex("TrialTable", "id");
+		
+//		System.out.println(app.getTables().get(0).getLHT().size());
+		Assert.assertEquals(1, app.getTables().get(0).getLHT().size());
 		
 	}
 }
