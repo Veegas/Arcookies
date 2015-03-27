@@ -228,7 +228,7 @@ public class DBApp implements DBAppInterface {
 			Hashtable<String, String> htblColNameValue, String strOperator)
 			throws DBEngineException, ClassNotFoundException {
 	
-		
+		ArrayList<ArrayList<String>> res = new ArrayList<ArrayList<String>>();
 		Iterator result;
 		String linearHashPage = null;
 		
@@ -281,10 +281,66 @@ public class DBApp implements DBAppInterface {
 			multiKdPage = (String) table.getKDT().search(doublecol);
 		}
 		
-		if(multiKdPage.equals(linearHashPage)){
+		
+		
+		if(multiKdPage.equals(linearHashPage) && strOperator.equalsIgnoreCase("AND")){
 			Page page = Page.loadFromDisk(multiKdPage);
-			
+			for(int i = 0 ; i< page.getRow_count(); i++)
+			{
+			ArrayList<String> temp1 = page.getRecord(i);
+			if(temp1.contains(table.getSingleIndexedCol())){
+			res.add(temp1);	
+			}
+			}
 		}
+		
+		else if(!multiKdPage.equals(linearHashPage) && strOperator.equalsIgnoreCase("OR")){
+			Page page = Page.loadFromDisk(multiKdPage);
+			Page page1 = Page.loadFromDisk(linearHashPage);
+			for(int i = 0 ; i< page.getRow_count(); i++)
+			{
+			ArrayList<String> temp1 = page.getRecord(i);
+			boolean f= true;
+			for(String s: table.getMultiIndex()){
+			if(!temp1.contains(s)){
+			f= false;	
+			}
+			}
+			if(f){
+				res.add(temp1);
+			}
+			}
+			for(int i = 0 ; i< page1.getRow_count(); i++)
+			{
+			ArrayList<String> temp1 = page1.getRecord(i);
+			boolean f= true;
+			for(String s: table.getMultiIndex()){
+			if(!temp1.contains(s)){
+			f= false;	
+			}
+			}
+			if(f){
+				res.add(temp1);
+			}
+			}
+		}
+		else if(multiKdPage.equals(linearHashPage) && strOperator.equalsIgnoreCase("OR")){
+			Page page = Page.loadFromDisk(multiKdPage);
+			for(int i = 0 ; i< page.getRow_count(); i++)
+			{
+			ArrayList<String> temp1 = page.getRecord(i);
+			boolean f= true;
+			for(String s: table.getMultiIndex()){
+			if(!temp1.contains(s)){
+			f= false;	
+			}
+			}
+			if(f){
+				res.add(temp1);
+			}
+			}
+		} 
+		return result = res.iterator();
 	
 	}
 
