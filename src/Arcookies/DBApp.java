@@ -15,11 +15,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
 
+import net.sf.javaml.core.kdtree.KDTree;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
 
@@ -31,37 +33,49 @@ public class DBApp implements DBAppInterface {
 
 	public static void main(String[] args) {
 
-		try {
-			Hashtable<String, String> namesTypes = new Hashtable<String, String>();
+		byte[] encoded = "hashbarownies".getBytes(StandardCharsets.UTF_8);
+		System.out.println(encoded[0]);
 
-			Hashtable<String, String> namesRefs = new Hashtable<String, String>();
+		/*
+		 * try { Hashtable<String, String> namesTypes = new Hashtable<String,
+		 * String>();
+		 * 
+		 * Hashtable<String, String> namesRefs = new Hashtable<String,
+		 * String>();
+		 * 
+		 * Hashtable<String, String> namesValues = new Hashtable<String,
+		 * String>(); namesTypes.put("name", "String");
+		 * namesTypes.put("tutorial", "String"); namesTypes.put("id", "String");
+		 * namesTypes.put("lol", "String");
+		 * 
+		 * namesRefs.put("tutorial", "class"); namesRefs.put("name", "student");
+		 * 
+		 * namesValues.put("name", "testname"); namesValues.put("tutorial",
+		 * "testtutorial"); namesValues.put("id", "testid");
+		 * namesValues.put("lol", "testlol");
+		 * 
+		 * DBApp app = new DBApp(); app.init();
+		 * 
+		 * app.createTable("TrialTable", namesTypes, namesRefs, "id");
+		 * System.out.print("done"); app.insertIntoTable("TrialTable",
+		 * namesValues); System.out.print("inserted");
+		 * 
+		 * } catch (DBAppException | IOException e) {
+		 * System.out.println("error hena"); e.printStackTrace(); }
+		 */
+		DBApp app = new DBApp();
+		app.init();
 
-			Hashtable<String, String> namesValues = new Hashtable<String, String>();
-			namesTypes.put("name", "String");
-			namesTypes.put("tutorial", "String");
-			namesTypes.put("id", "String");
-			namesTypes.put("lol", "String");
+		System.out.println(app.tables);
 
-			namesRefs.put("tutorial", "class");
-			namesRefs.put("name", "student");
+	}
 
-			namesValues.put("name", "test");
-			namesValues.put("tutorial", "test");
-			namesValues.put("id", "test");
-			namesValues.put("lol", "test");
+	public ArrayList<Table> getTables() {
+		return tables;
+	}
 
-			DBApp app = new DBApp();
-			app.init();
-
-			app.createTable("TrialTable", namesTypes, namesRefs, "id");
-			System.out.print("done");
-			app.insertIntoTable("TrialTable", namesValues);
-			System.out.print("inserted");
-
-		} catch (DBAppException | IOException e) {
-			System.out.println("error hena");
-			e.printStackTrace();
-		}
+	public void setTables(ArrayList<Table> tables) {
+		this.tables = tables;
 	}
 
 	@Override
@@ -123,9 +137,10 @@ public class DBApp implements DBAppInterface {
 				table.setSingleIndexedCol(strColName);
 				for (String p : table.getPages()) {
 					try {
-						for (int i = 0; i > 0; i++) {
+						Page temporaryPage = Page.loadFromDisk(p);
+						for (int i = 0; i <= temporaryPage.getRow_count(); i++) {
 							String record = table.getValueFromPage(
-									Page.loadFromDisk(p), strColName, i);
+									temporaryPage, strColName, i);
 							if (!(record == null)) {
 								table.getLHT().put(record, p);
 							} else {
@@ -149,33 +164,34 @@ public class DBApp implements DBAppInterface {
 		// TODO Auto-generated method stub
 		for (Table table : tables) {
 			if (table.getName().equals(strTableName)) {
-				if (table.getSingleIndexedCol().equals(null)) {
-
-					Enumeration<String> colNames = htblColNames.keys();
-					String col0 = colNames.nextElement();
-					String col1 = htblColNames.get(col0);
+					table.setKDT(htblColNames.size());// 2 hardcoded as hashtable has 2
+									// strings(columns) only
+					KDTree tree = table.getKDT();
+					double [] keys = new double[htblColNames.size()];
 					for (String p : table.getPages()) {
+						Page current;
 						try {
-							for (int i = 0; i > 0; i++) {
-								String recordCol0 = table.getValueFromPage(
-										Page.loadFromDisk(p), col0, i);
-								String recordCol1 = table.getValueFromPage(
-										Page.loadFromDisk(p), col1, i);
-								if (!(recordCol0 == null || recordCol1 == null)) {
 
-								} else {
-									break;
-								}
-
-							}
+							current = Page.loadFromDisk(p);
+							for (int i = 0; i < current.getRow_count(); i++) {
+							Enumeration<String> colNames = htblColNames.keys();
+							String currentColName = colNames.nextElement();
+							for (int k = 0; k < htblColNames.size(); k++) {
+								String record = table.getValueFromPage(current
+										,colNames.nextElement(), i);
+								keys[k] = Double.parseDouble(record);
+								tree.insert(keys, p);	
+						}
+					}
 						} catch (ClassNotFoundException e) {
-
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-					}
+						
 				}
 			}
+
+			
 		}
 	}
 
@@ -187,9 +203,7 @@ public class DBApp implements DBAppInterface {
 			if (table.getName().equalsIgnoreCase(strTableName)) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
-					table.getLHT().put(table.getSingleIndexedCol(),
-							tempPage.getPage_id());
-
+					tempPage.saveToDisk();
 				} catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -202,8 +216,11 @@ public class DBApp implements DBAppInterface {
 	public void deleteFromTable(String strTableName,
 			Hashtable<String, String> htblColNameValue, String strOperator)
 			throws DBEngineException {
-		// TODO Auto-generated method stub
-
+		for (Table table : tables) {
+			if (table.getName().equalsIgnoreCase(strTableName)) {
+				
+			}
+		}
 	}
 
 	@Override
@@ -287,4 +304,15 @@ public class DBApp implements DBAppInterface {
 
 		}
 	}
+
+/*	public static double AlphabetsToFloat(String s) {
+		byte[] encoded = s.getBytes(StandardCharsets.UTF_8);
+		for (byte c : encoded) {}
+		 * s=s.toLowerCase(); StringBuilder sb = new StringBuilder(); for (char
+		 * c : s.toCharArray()) { sb.append((char) (c - 'a' + 1)); } String b =
+		 * ""; for (int i = 0; i < sb.length(); i++) { b = b +
+		 * (sb.codePointAt(i)); }
+		 
+	return Float.parseFloat(c);
+*/
 }

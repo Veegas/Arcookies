@@ -1,688 +1,328 @@
 package Arcookies;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Arrays;
+
+class Node {
+	String key;
+	Node left;
+	Node right;
+	Node parent;
+	Bucket leftBucket;
+	Bucket rightBucket;
+	int level;
+
+	public Node() {
+
+	}
+
+	public Node(String key) {
+		this.key = key;
+	}
+
+}
+
+class Bucket {
+	ArrayList<String> values;
+
+	// Node parent;
+	public Bucket() {
+		this.values = new ArrayList<String>();
+	}
+
+	public void put(String val) {
+		if (this.values == null) {
+			this.values = new ArrayList<String>();
+		}
+		this.values.add(val);
+	}
+}
+
+public class KDTree {
+
+	Node root;
+	String key1Name;
+	String key2Name;
+	int max = 3;
+	
+	//get the columns from the table
+	
+	int columnNumberOfKey1 = 0; // assign it to the column number of key one(the
+								// Table has a hashtable of columns, this
+								// variable
+								// is the index of the column that we build the
+								// index on )
+	int columnNumberOfKey2 = 0; // like the previous variable
+	Table table; // assign it to the table you build the kd on
+
+	public KDTree(int maxPerBucket,Table t) {
+		key1Name = "";
+		key2Name = "";
+		this.root = new Node();
+		root.level = 1;
+		root.parent = null;
+		root.leftBucket = new Bucket();
+ 		root.rightBucket = new Bucket();
+		this.max = maxPerBucket;
+	 table = t;
+	}
+
+	public KDTree(Node root) {
+		this.root = root;
+	}
+
+	public void put(String k1, String k2, String value) throws ClassNotFoundException {
+		if (root.key == null) {
+			root.key = k1;
+			root.leftBucket.put(value);
+
+		} else {
+			int level = 1;
+			Node current = root;
+			int cmp = 0;
+			Node parent = null;
+			while (current != null) {
+				if (level % 2 == 1) {
+					cmp = k1.compareTo(current.key);
+				} else {
+					cmp = k2.compareTo(current.key);
+				}
+				parent = current;
+				if (cmp >= 0) {
+					current = current.left;
+				} else {
+					current = current.right;
+				}
+				level = 1 - level;
+			}
+
+			if (cmp >= 0) {
+				if (parent.leftBucket == null) {
+					parent.leftBucket = new Bucket();
+					parent.leftBucket.put(value);
+				} else {
+					Bucket tempbucket = parent.leftBucket;
+					if (tempbucket.values.size() < this.max) {
+						parent.leftBucket.put(value);
+					} else {
+						Node tempNode = new Node();
+						tempNode.parent = parent;
+						parent.left = tempNode;
+						int parentLevel = parent.level;
+						tempNode.level = 1 - parentLevel;
+						ArrayList<String> a = loadAllValuesInBucket(tempbucket);
+						parent.leftBucket = null;
+						tempNode.leftBucket = new Bucket();
+						tempNode.rightBucket = new Bucket();
+						for (String s : a) {
+							// redistribute the original bucket on left and
+							// right buckets of the new node
+							String[] listOfvaluesInRecord = s.split(",");
+							String compareVal = "";
+							int compareIndex = 0;
+							if (tempNode.level % 2 == 1) { // compare k1
+								compareVal = getAvg(a, 1);
+								compareIndex = columnNumberOfKey1;
+							} else { // compare k2
+								compareVal = getAvg(a, 2);
+								compareIndex = columnNumberOfKey2;
+							}
+							tempNode.key = compareVal;
+							if (listOfvaluesInRecord[compareIndex]
+									.compareTo(tempNode.key) >= 0) {
+								tempNode.leftBucket
+										.put(listOfvaluesInRecord[compareIndex]);
+							} else {
+								tempNode.rightBucket
+										.put(listOfvaluesInRecord[compareIndex]);
+							}
+
+						}
+						// int cmp2 = 0;
+						// if (tempNode.level % 2 == 1) {
+						// cmp2 = k1.compareTo(tempNode.key);
+						// }
+						// else {
+						// cmp2 = k2.compareTo(tempNode.key);
+						// }
+						// if (cmp2 >= 0) {
+						// tempNode.leftBucket.put(value);
+						// }
+						// else {
+						// tempNode.leftBucket.put(value);
+						// }
+						//
+					}
+				}
+			} else {
+				if (parent.rightBucket == null) {
+					parent.rightBucket = new Bucket();
+					parent.rightBucket.put(value);
+				} else {
+
+					Bucket tempbucket = parent.rightBucket;
+					if (tempbucket.values.size() < this.max) {
+						parent.rightBucket.put(value);
+					} else {
+						Node tempNode = new Node();
+						tempNode.parent = parent;
+						parent.right = tempNode;
+						int parentLevel = parent.level;
+						tempNode.level = 1 - parentLevel;
+						ArrayList<String> a = loadAllValuesInBucket(tempbucket);
+						parent.rightBucket = null;
+						tempNode.leftBucket = new Bucket();
+						tempNode.rightBucket = new Bucket();
+						for (String s : a) {
+							// redistribute the original bucket on left and
+							// right buckets of the new node
+							String[] listOfvaluesInRecord = s.split(",");
+							String compareVal = "";
+							int compareIndex = 0;
+							if (tempNode.level % 2 == 1) { // compare k1
+								compareVal = getAvg(a, 1);
+								compareIndex = columnNumberOfKey1;
+							} else { // compare k2
+								compareVal = getAvg(a, 2);
+								compareIndex = columnNumberOfKey2;
+							}
+							tempNode.key = compareVal;
+							if (listOfvaluesInRecord[compareIndex]
+									.compareTo(tempNode.key) >= 0) {
+								tempNode.leftBucket
+										.put(listOfvaluesInRecord[compareIndex]);
+							} else {
+								tempNode.rightBucket
+										.put(listOfvaluesInRecord[compareIndex]);
+							}
+
+						}
+						int cmp2 = 0;
+						if (tempNode.level % 2 == 1) {
+							cmp2 = k1.compareTo(tempNode.key);
+						} else {
+							cmp2 = k2.compareTo(tempNode.key);
+						}
+						if (cmp2 >= 0) {
+							tempNode.leftBucket.put(value);
+						} else {
+							tempNode.leftBucket.put(value);
+						}
+					}
+
+				}
+
+			}
+		}
+	}
+
+	// get the average value in the bucket to be the new key
+	public String getAvg(ArrayList<String> a, int keyNumber) {
+		String avg = "";
+		String[] toBeSorted = new String[a.size()];
+		int index = 0;
+		if (keyNumber == 1) {
+			index = columnNumberOfKey1;
+		} else {
+			index = columnNumberOfKey2;
+		}
+		int i = 0;
+		for (String string : a) {
+			String[] columnValues = string.split(",");
+			toBeSorted[i] = columnValues[index];
+			i++;
+		}
+		Arrays.sort(toBeSorted);
+		avg = toBeSorted[a.size() / 2];
+		return avg;
+	}
+
+	// The bucket stores references to the records, so we need to get the record
+	// to compare them to redistribute the records in new buckets after
+	// resizing occurs
+	public ArrayList<String> loadAllValuesInBucket(Bucket b) throws ClassNotFoundException {
+		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> valInBucket = b.values;
+		for (String string : valInBucket) {
+			String[] pos = string.split(",");
+			String tableName = pos[0];
+			String pageNumber = pos[1];
+			String recordNumber = pos[2];
+			// load The page to get the record and add it to the result
+			String p = this.table.getName() +"_" + this.table.getPages().get(Integer.parseInt(pageNumber));
+			Page page = Page.loadFromDisk(p);
+			ArrayList<String> r = page.getRecord(Integer.parseInt(recordNumber));
+			String r1 = "";
+			for (int i = 0; i < r.size(); i++) {
+				r1 += r.get(i) + ",";
+			}
+			r1 = r1.substring(0, r1.length() - 1);
+			result.add(r1);
+		}
+		return result;
+	}
+
+	public ArrayList<String> get(String k1, String k2) {
+		ArrayList<String> result = new ArrayList<String>();
+		if (root.key == null) {
+			return result;
+		} else {
+			int level = 1;
+			Node current = root;
+			int cmp = 0;
+			Node parent = null;
+			while (current != null) {
+				if (level % 2 == 1) {
+					cmp = k1.compareTo(current.key);
+				} else {
+					cmp = k2.compareTo(current.key);
+				}
+				parent = current;
+				if (cmp >= 0) {
+					current = current.left;
+				} else {
+					current = current.right;
+				}
+				level = 1 - level;
+			}
+			// check on number of values per bucket
+
+			if (cmp >= 0) {
+				if (parent.leftBucket == null) {
+					parent.leftBucket.values = new ArrayList<String>();
+				}
+				return parent.leftBucket.values;
+			} else {
+				if (parent.rightBucket == null) {
+					parent.rightBucket.values = new ArrayList<String>();
+				}
+				return parent.rightBucket.values;
+			}
+		}
+	}
+
+	public static void main(String[] args) throws ClassNotFoundException, IOException {
+	    Table trial = new Table("Employee",5);
+	    for (int i = 0; i<5;i++){
+	    	trial.addPages(""+i);
+	    }
+		KDTree k = new KDTree(3,trial);
+		k.put("mariam", "25", "Employee,2,4");
+		k.put("sara", "21", "Employee,1,6");
+		k.put("ssara", "22", "Employee,4,5");
+	//	k.put("sssara", "22", "Employee,4,5");
+		//k.put("alaa", "24", "Employee,2,5");
+		k.columnNumberOfKey1 = 3;
+		k.columnNumberOfKey2 = 4;
+		// ArrayList<String> tempRecords = new ArrayList<String>();
+		// tempRecords.add("1,0,1,aariam,25");
+		// tempRecords.add("1,0,2,sara,41");
+		// tempRecords.add("1,0,3,aager,35");
+		// tempRecords.add("1,0,4,yara,21");
+		// System.out.println(k.getAvg(tempRecords, 2));
+		System.out.println(k.root.rightBucket.values.size());
+		//System.out.println(k.root.left.leftBucket.values.size());
+		System.out.println(k.root.left.leftBucket.values.size());
+	}
 
-/**
- * A k-d tree (short for k-dimensional tree) is a space-partitioning data
- * structure for organizing points in a k-dimensional space. k-d trees are a
- * useful data structure for several applications, such as searches involving a
- * multidimensional search key (e.g. range searches and nearest neighbor
- * searches). k-d trees are a special case of binary space partitioning trees.
- * 
- * http://en.wikipedia.org/wiki/K-d_tree
- * 
- * @author Justin Wetherell <phishman3579@gmail.com>
- */
-public class KDTree<T extends KDTree.XYZPoint> {
-
-    private int k = 3;
-    private KdNode root = null;
-
-    private static final Comparator<XYZPoint> X_COMPARATOR = new Comparator<XYZPoint>() {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int compare(XYZPoint o1, XYZPoint o2) {
-            if (o1.x < o2.x)
-                return -1;
-            if (o1.x > o2.x)
-                return 1;
-            return 0;
-        }
-    };
-
-    private static final Comparator<XYZPoint> Y_COMPARATOR = new Comparator<XYZPoint>() {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int compare(XYZPoint o1, XYZPoint o2) {
-            if (o1.y < o2.y)
-                return -1;
-            if (o1.y > o2.y)
-                return 1;
-            return 0;
-        }
-    };
-
-    private static final Comparator<XYZPoint> Z_COMPARATOR = new Comparator<XYZPoint>() {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int compare(XYZPoint o1, XYZPoint o2) {
-            if (o1.z < o2.z)
-                return -1;
-            if (o1.z > o2.z)
-                return 1;
-            return 0;
-        }
-    };
-
-    protected static final int X_AXIS = 0;
-    protected static final int Y_AXIS = 1;
-    protected static final int Z_AXIS = 2;
-
-    /**
-     * Default constructor.
-     */
-    public KDTree() {
-    }
-
-    /**
-     * Constructor for creating a more balanced tree. It uses the
-     * "median of points" algorithm.
-     * 
-     * @param list
-     *            of XYZPoints.
-     */
-    public KDTree(List<XYZPoint> list) {
-        root = createNode(list, k, 0);
-    }
-
-    /**
-     * Create node from list of XYZPoints.
-     * 
-     * @param list
-     *            of XYZPoints.
-     * @param k
-     *            of the tree.
-     * @param depth
-     *            depth of the node.
-     * @return node created.
-     */
-    private static KdNode createNode(List<XYZPoint> list, int k, int depth) {
-        if (list == null || list.size() == 0)
-            return null;
-
-        int axis = depth % k;
-        if (axis == X_AXIS)
-            Collections.sort(list, X_COMPARATOR);
-        else if (axis == Y_AXIS)
-            Collections.sort(list, Y_COMPARATOR);
-        else
-            Collections.sort(list, Z_COMPARATOR);
-
-        KdNode node = null;
-        if (list.size() > 0) {
-            int medianIndex = list.size() / 2;
-            node = new KdNode(k, depth, list.get(medianIndex));
-            List<XYZPoint> less = new ArrayList<XYZPoint>(list.size() - 1);
-            List<XYZPoint> more = new ArrayList<XYZPoint>(list.size() - 1);
-            // Process list to see where each non-median point lies
-            for (int i = 0; i < list.size(); i++) {
-                if (i == medianIndex)
-                    continue;
-                XYZPoint p = list.get(i);
-                if (KdNode.compareTo(depth, k, p, node.id) <= 0) {
-                    less.add(p);
-                } else {
-                    more.add(p);
-                }
-            }
-            if ((medianIndex - 1) >= 0) {
-                // Cannot assume points before the median are less since they
-                // could be equal
-                // List<XYZPoint> less = list.subList(0, mediaIndex);
-                if (less.size() > 0) {
-                    node.lesser = createNode(less, k, depth + 1);
-                    node.lesser.parent = node;
-                }
-            }
-            if ((medianIndex + 1) <= (list.size() - 1)) {
-                // Cannot assume points after the median are less since they
-                // could be equal
-                // List<XYZPoint> more = list.subList(mediaIndex + 1,
-                // list.size());
-                if (more.size() > 0) {
-                    node.greater = createNode(more, k, depth + 1);
-                    node.greater.parent = node;
-                }
-            }
-        }
-
-        return node;
-    }
-
-    /**
-     * Add value to the tree. Tree can contain multiple equal values.
-     * 
-     * @param value
-     *            T to add to the tree.
-     * @return True if successfully added to tree.
-     */
-    public boolean add(T value) {
-        if (value == null)
-            return false;
-
-        if (root == null) {
-            root = new KdNode(value);
-            return true;
-        }
-
-        KdNode node = root;
-        while (true) {
-            if (KdNode.compareTo(node.depth, node.k, value, node.id) <= 0) {
-                // Lesser
-                if (node.lesser == null) {
-                    KdNode newNode = new KdNode(k, node.depth + 1, value);
-                    newNode.parent = node;
-                    node.lesser = newNode;
-                    break;
-                }
-                node = node.lesser;
-            } else {
-                // Greater
-                if (node.greater == null) {
-                    KdNode newNode = new KdNode(k, node.depth + 1, value);
-                    newNode.parent = node;
-                    node.greater = newNode;
-                    break;
-                }
-                node = node.greater;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Does the tree contain the value.
-     * 
-     * @param value
-     *            T to locate in the tree.
-     * @return True if tree contains value.
-     */
-    public boolean contains(T value) {
-        if (value == null)
-            return false;
-
-        KdNode node = getNode(this, value);
-        return (node != null);
-    }
-
-    /**
-     * Locate T in the tree.
-     * 
-     * @param tree
-     *            to search.
-     * @param value
-     *            to search for.
-     * @return KdNode or NULL if not found
-     */
-    private static final <T extends KDTree.XYZPoint> KdNode getNode(KDTree<T> tree, T value) {
-        if (tree == null || tree.root == null || value == null)
-            return null;
-
-        KdNode node = tree.root;
-        while (true) {
-            if (node.id.equals(value)) {
-                return node;
-            } else if (KdNode.compareTo(node.depth, node.k, value, node.id) <= 0) {
-                // Lesser
-                if (node.lesser == null) {
-                    return null;
-                }
-                node = node.lesser;
-            } else {
-                // Greater
-                if (node.greater == null) {
-                    return null;
-                }
-                node = node.greater;
-            }
-        }
-    }
-
-    /**
-     * Remove first occurrence of value in the tree.
-     * 
-     * @param value
-     *            T to remove from the tree.
-     * @return True if value was removed from the tree.
-     */
-    public boolean remove(T value) {
-        if (value == null)
-            return false;
-
-        KdNode node = getNode(this, value);
-        if (node == null)
-            return false;
-
-        KdNode parent = node.parent;
-        if (parent != null) {
-            if (parent.lesser != null && node.equals(parent.lesser)) {
-                List<XYZPoint> nodes = getTree(node);
-                if (nodes.size() > 0) {
-                    parent.lesser = createNode(nodes, node.k, node.depth);
-                    if (parent.lesser != null) {
-                        parent.lesser.parent = parent;
-                    }
-                } else {
-                    parent.lesser = null;
-                }
-            } else {
-                List<XYZPoint> nodes = getTree(node);
-                if (nodes.size() > 0) {
-                    parent.greater = createNode(nodes, node.k, node.depth);
-                    if (parent.greater != null) {
-                        parent.greater.parent = parent;
-                    }
-                } else {
-                    parent.greater = null;
-                }
-            }
-        } else {
-            // root
-            List<XYZPoint> nodes = getTree(node);
-            if (nodes.size() > 0)
-                root = createNode(nodes, node.k, node.depth);
-            else
-                root = null;
-        }
-
-        return true;
-    }
-
-    /**
-     * Get the (sub) tree rooted at root.
-     * 
-     * @param root
-     *            of tree to get nodes for.
-     * @return points in (sub) tree, not including root.
-     */
-    private static final List<XYZPoint> getTree(KdNode root) {
-        List<XYZPoint> list = new ArrayList<XYZPoint>();
-        if (root == null)
-            return list;
-
-        if (root.lesser != null) {
-            list.add(root.lesser.id);
-            list.addAll(getTree(root.lesser));
-        }
-        if (root.greater != null) {
-            list.add(root.greater.id);
-            list.addAll(getTree(root.greater));
-        }
-
-        return list;
-    }
-
-    /**
-     * K Nearest Neighbor search
-     * 
-     * @param K
-     *            Number of neighbors to retrieve. Can return more than K, if
-     *            last nodes are equal distances.
-     * @param value
-     *            to find neighbors of.
-     * @return unmodifiable collection of T neighbors.
-     */
-    @SuppressWarnings("unchecked")
-    public Collection<T> nearestNeighbourSearch(int K, T value) {
-        if (value == null)
-            return null;
-
-        // Map used for results
-        TreeSet<KdNode> results = new TreeSet<KdNode>(new EuclideanComparator(value));
-
-        // Find the closest leaf node
-        KdNode prev = null;
-        KdNode node = root;
-        while (node != null) {
-            if (KdNode.compareTo(node.depth, node.k, value, node.id) <= 0) {
-                // Lesser
-                prev = node;
-                node = node.lesser;
-            } else {
-                // Greater
-                prev = node;
-                node = node.greater;
-            }
-        }
-        KdNode leaf = prev;
-
-        if (leaf != null) {
-            // Used to not re-examine nodes
-            Set<KdNode> examined = new HashSet<KdNode>();
-
-            // Go up the tree, looking for better solutions
-            node = leaf;
-            while (node != null) {
-                // Search node
-                searchNode(value, node, K, results, examined);
-                node = node.parent;
-            }
-        }
-
-        // Load up the collection of the results
-        Collection<T> collection = new ArrayList<T>(K);
-        for (KdNode kdNode : results)
-            collection.add((T) kdNode.id);
-        return Collections.unmodifiableCollection(collection);
-    }
-
-    private static final <T extends KDTree.XYZPoint> void searchNode(T value, KdNode node, int K,
-            TreeSet<KdNode> results, Set<KdNode> examined) {
-        examined.add(node);
-
-        // Search node
-        KdNode lastNode = null;
-        Double lastDistance = Double.MAX_VALUE;
-        if (results.size() > 0) {
-            lastNode = results.last();
-            lastDistance = lastNode.id.euclideanDistance(value);
-        }
-        Double nodeDistance = node.id.euclideanDistance(value);
-        if (nodeDistance.compareTo(lastDistance) < 0) {
-            if (results.size() == K && lastNode != null)
-                results.remove(lastNode);
-            results.add(node);
-        } else if (nodeDistance.equals(lastDistance)) {
-            results.add(node);
-        } else if (results.size() < K) {
-            results.add(node);
-        }
-        lastNode = results.last();
-        lastDistance = lastNode.id.euclideanDistance(value);
-
-        int axis = node.depth % node.k;
-        KdNode lesser = node.lesser;
-        KdNode greater = node.greater;
-
-        // Search children branches, if axis aligned distance is less than
-        // current distance
-        if (lesser != null && !examined.contains(lesser)) {
-            examined.add(lesser);
-
-            double nodePoint = Double.MIN_VALUE;
-            double valuePlusDistance = Double.MIN_VALUE;
-            if (axis == X_AXIS) {
-                nodePoint = node.id.x;
-                valuePlusDistance = value.x - lastDistance;
-            } else if (axis == Y_AXIS) {
-                nodePoint = node.id.y;
-                valuePlusDistance = value.y - lastDistance;
-            } else {
-                nodePoint = node.id.z;
-                valuePlusDistance = value.z - lastDistance;
-            }
-            boolean lineIntersectsCube = ((valuePlusDistance <= nodePoint) ? true : false);
-
-            // Continue down lesser branch
-            if (lineIntersectsCube)
-                searchNode(value, lesser, K, results, examined);
-        }
-        if (greater != null && !examined.contains(greater)) {
-            examined.add(greater);
-
-            double nodePoint = Double.MIN_VALUE;
-            double valuePlusDistance = Double.MIN_VALUE;
-            if (axis == X_AXIS) {
-                nodePoint = node.id.x;
-                valuePlusDistance = value.x + lastDistance;
-            } else if (axis == Y_AXIS) {
-                nodePoint = node.id.y;
-                valuePlusDistance = value.y + lastDistance;
-            } else {
-                nodePoint = node.id.z;
-                valuePlusDistance = value.z + lastDistance;
-            }
-            boolean lineIntersectsCube = ((valuePlusDistance >= nodePoint) ? true : false);
-
-            // Continue down greater branch
-            if (lineIntersectsCube)
-                searchNode(value, greater, K, results, examined);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return TreePrinter.getString(this);
-    }
-
-    protected static class EuclideanComparator implements Comparator<KdNode> {
-
-        private XYZPoint point = null;
-
-        public EuclideanComparator(XYZPoint point) {
-            this.point = point;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int compare(KdNode o1, KdNode o2) {
-            Double d1 = point.euclideanDistance(o1.id);
-            Double d2 = point.euclideanDistance(o2.id);
-            if (d1.compareTo(d2) < 0)
-                return -1;
-            else if (d2.compareTo(d1) < 0)
-                return 1;
-            return o1.id.compareTo(o2.id);
-        }
-    }
-
-    public static class KdNode implements Comparable<KdNode> {
-
-        private int k = 3;
-        private int depth = 0;
-        private XYZPoint id = null;
-        private KdNode parent = null;
-        private KdNode lesser = null;
-        private KdNode greater = null;
-
-        public KdNode(XYZPoint id) {
-            this.id = id;
-        }
-
-        public KdNode(int k, int depth, XYZPoint id) {
-            this(id);
-            this.k = k;
-            this.depth = depth;
-        }
-
-        public static int compareTo(int depth, int k, XYZPoint o1, XYZPoint o2) {
-            int axis = depth % k;
-            if (axis == X_AXIS)
-                return X_COMPARATOR.compare(o1, o2);
-            if (axis == Y_AXIS)
-                return Y_COMPARATOR.compare(o1, o2);
-            return Z_COMPARATOR.compare(o1, o2);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int hashCode() {
-            return 31 * (this.k + this.depth + this.id.hashCode());
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null)
-                return false;
-            if (!(obj instanceof KdNode))
-                return false;
-
-            KdNode kdNode = (KdNode) obj;
-            if (this.compareTo(kdNode) == 0)
-                return true;
-            return false;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int compareTo(KdNode o) {
-            return compareTo(depth, k, this.id, o.id);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder();
-            builder.append("k=").append(k);
-            builder.append(" depth=").append(depth);
-            builder.append(" id=").append(id.toString());
-            return builder.toString();
-        }
-    }
-
-    public static class XYZPoint implements Comparable<XYZPoint> {
-
-        double x = Double.NEGATIVE_INFINITY;
-        double y = Double.NEGATIVE_INFINITY;
-        double z = Double.NEGATIVE_INFINITY;
-
-        public XYZPoint(double x, double y) {
-            this.x = x;
-            this.y = y;
-            this.z = 0;
-        }
-
-        public XYZPoint(double x, double y, double z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        /**
-         * Computes the Euclidean distance from this point to the other.
-         * 
-         * @param o1
-         *            other point.
-         * @return euclidean distance.
-         */
-        public double euclideanDistance(XYZPoint o1) {
-            return euclideanDistance(o1, this);
-        }
-
-        /**
-         * Computes the Euclidean distance from one point to the other.
-         * 
-         * @param o1
-         *            first point.
-         * @param o2
-         *            second point.
-         * @return euclidean distance.
-         */
-        private static final double euclideanDistance(XYZPoint o1, XYZPoint o2) {
-            return Math.sqrt(Math.pow((o1.x - o2.x), 2) + Math.pow((o1.y - o2.y), 2) + Math.pow((o1.z - o2.z), 2));
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int hashCode() {
-            return 31 * (int)(this.x + this.y + this.z);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null)
-                return false;
-            if (!(obj instanceof XYZPoint))
-                return false;
-
-            XYZPoint xyzPoint = (XYZPoint) obj;
-            return compareTo(xyzPoint) == 0;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int compareTo(XYZPoint o) {
-            int xComp = X_COMPARATOR.compare(this, o);
-            if (xComp != 0)
-                return xComp;
-            int yComp = Y_COMPARATOR.compare(this, o);
-            if (yComp != 0)
-                return yComp;
-            int zComp = Z_COMPARATOR.compare(this, o);
-            return zComp;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder();
-            builder.append("(");
-            builder.append(x).append(", ");
-            builder.append(y).append(", ");
-            builder.append(z);
-            builder.append(")");
-            return builder.toString();
-        }
-    }
-
-    protected static class TreePrinter {
-
-        public static <T extends XYZPoint> String getString(KDTree<T> tree) {
-            if (tree.root == null)
-                return "Tree has no nodes.";
-            return getString(tree.root, "", true);
-        }
-
-        private static String getString(KdNode node, String prefix, boolean isTail) {
-            StringBuilder builder = new StringBuilder();
-
-            if (node.parent != null) {
-                String side = "left";
-                if (node.parent.greater != null && node.id.equals(node.parent.greater.id))
-                    side = "right";
-                builder.append(prefix + (isTail ? "└── " : "├── ") + "[" + side + "] " + "depth=" + node.depth + " id="
-                        + node.id + "\n");
-            } else {
-                builder.append(prefix + (isTail ? "└── " : "├── ") + "depth=" + node.depth + " id=" + node.id + "\n");
-            }
-            List<KdNode> children = null;
-            if (node.lesser != null || node.greater != null) {
-                children = new ArrayList<KdNode>(2);
-                if (node.lesser != null)
-                    children.add(node.lesser);
-                if (node.greater != null)
-                    children.add(node.greater);
-            }
-            if (children != null) {
-                for (int i = 0; i < children.size() - 1; i++) {
-                    builder.append(getString(children.get(i), prefix + (isTail ? "    " : "│   "), false));
-                }
-                if (children.size() >= 1) {
-                    builder.append(getString(children.get(children.size() - 1), prefix + (isTail ? "    " : "│   "),
-                            true));
-                }
-            }
-
-            return builder.toString();
-        }
-    }
 }

@@ -70,7 +70,7 @@ public class CsvController {
 			fileReader = new BufferedReader(new FileReader(fileName));
 
 			// Read the CSV file header to skip it
-			fileReader.readLine();
+			//fileReader.readLine();
 
 			// Read the file line by line starting from the second line
 
@@ -92,7 +92,7 @@ public class CsvController {
                    }
 					
 					if (alreadyExists) {
-						if (!(tempTable.getColumns().contains(tokens[1]))){
+				if (!tempTable.getColumns().contains(tokens[1]))
 						tempTable.getColumns().add(tokens[1]);
 						}
 					} else {
@@ -103,7 +103,7 @@ public class CsvController {
 
 				}
 
-			}
+			
 			return tables;
 
 		}
