@@ -30,6 +30,7 @@ public class unitTest {
 		namesRefs.put("name", "student");
 
 		DBApp app = new DBApp();
+		app.init();
 		app.createTable("TrialTable", namesTypes, namesRefs, "id");
 		
 		Assert.assertEquals(1, app.getTables().size());
@@ -64,7 +65,7 @@ public class unitTest {
 		ArrayList<String> array = new ArrayList<String>(namesValues.values());
 		
 		Page page = app.getTables().get(0).insertIntoPage(namesValues);
-		
+				
 		System.out.println("PAGE ROW COUNT" + page.getRecord(0));
 		System.out.println(app.getTables().get(0).getColumns());
 		Assert.assertEquals(4, app.getTables().get(0).getColumns().size());
