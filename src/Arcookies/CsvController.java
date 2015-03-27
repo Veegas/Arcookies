@@ -1,147 +1,125 @@
 package Arcookies;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 public class CsvController {
 
-	
 	private static final String comma = ",";
-    private static final String nextLine = "\n";
+	private static final String nextLine = "\n";
 	private static final String fileName = "metadata.csv";
-    private static  FileWriter fileWriter ;
-    static int recordCount =0;
+	private static FileWriter fileWriter;
+	static int recordCount = 0;
 
-public static void writeCsvFile(String tableName,String columnName,boolean key,
-		boolean indexed, String references, String type) throws IOException{
-	fileWriter =new FileWriter(fileName,true);
-	try {
-		fileWriter.append(tableName);
-		fileWriter.append(comma);
-		fileWriter.append(columnName);
-		fileWriter.append(comma);
-		fileWriter.append(""+key);
-		fileWriter.append(comma);
-		fileWriter.append(""+indexed);
-		fileWriter.append(comma);
-		fileWriter.append(tableName);
-		fileWriter.append(comma);
-		fileWriter.append(references);
-		fileWriter.write(nextLine);
-  
-		
-	} catch (IOException e) {
-		System.out.println("Error while writing to metaData file");
-		e.printStackTrace();
+	public static void writeCsvFile(String tableName, String columnName,
+			boolean key, boolean indexed, String references, String type)
+			throws IOException {
+		fileWriter = new FileWriter(fileName, true);
+		try {
+			fileWriter.append(tableName);
+			fileWriter.append(comma);
+			fileWriter.append(columnName);
+			fileWriter.append(comma);
+			fileWriter.append("" + key);
+			fileWriter.append(comma);
+			fileWriter.append("" + indexed);
+			fileWriter.append(comma);
+			fileWriter.append(tableName);
+			fileWriter.append(comma);
+			fileWriter.append(references);
+			fileWriter.write(nextLine);
+
+		} catch (IOException e) {
+			System.out.println("Error while writing to metaData file");
+			e.printStackTrace();
+		} finally {
+
+			try {
+
+				fileWriter.flush();
+
+				fileWriter.close();
+
+			} catch (IOException e) {
+
+				System.out
+						.println("Error while flushing/closing fileWriter !!!");
+
+				e.printStackTrace();
+
+			}
+
+		}
+
 	}
-	 finally {
-		
-		              
-		
-		             try {
-		
-		                 fileWriter.flush();
-		
-		                 fileWriter.close();
-		 
-		             } catch (IOException e) {
-		 
-		                 System.out.println("Error while flushing/closing fileWriter !!!");
-		 
-		                 e.printStackTrace();
-		 
-		             }
 
-	
-	
-	 }
-	
-	
-}
+	public static ArrayList<Table> readCsvFile(int maxRowCount) {
 
+		BufferedReader fileReader = null;
 
+		try {
+			// Create a new list of student to be filled by CSV file data
 
+			ArrayList<Table> tables = new ArrayList<Table>();
 
-public static ArrayList<Table> readCsvFile() {
-	
-	
-    BufferedReader fileReader = null;
+			String line = "";
 
-    try {
-      //Create a new list of student to be filled by CSV file data
+			fileReader = new BufferedReader(new FileReader(fileName));
 
-        ArrayList<Table> tables = new ArrayList<Table>();
+			// Read the CSV file header to skip it
+			fileReader.readLine();
 
-        String line = "";
+			// Read the file line by line starting from the second line
 
-        fileReader = new BufferedReader(new FileReader(fileName));
+			while ((line = fileReader.readLine()) != null) {
 
-        //Read the CSV file header to skip it
-        fileReader.readLine();
+				// Get all tokens available in line
+				String[] tokens = line.split(",");
 
-         
+				if (tokens.length > 0) {
 
-        //Read the file line by line starting from the second line
+					// Create a new table object and fill his data
+					Table table = new Table(tokens[0], maxRowCount);
+					if (tables.contains(table)) {
+						table.getColumns().add(tokens[1]);
+					} else {
+						tables.add(table);
+						table.getColumns().add(tokens[1]);
+					}
 
-        while ((line = fileReader.readLine()) != null) {
+				}
 
-            //Get all tokens available in line
-            String[] tokens = line.split(",");
+			}
+			return tables;
 
-            if (tokens.length > 0) {
-               
-                //Create a new table object and fill his  data
-                Table table = new Table(tokens[0]);
-                if (tables.contains(table)) {
-                	table.getColumns().add(tokens[1]);
-                } else {
-                tables.add(table);
-                table.getColumns().add(tokens[1]);
-                }
+		}
 
-            }
+		catch (Exception e) {
 
-        }
-        return tables;
+			System.out.println("Error in CsvFileReader !");
 
-    }
+			e.printStackTrace();
 
-    catch (Exception e) {
+		} finally {
 
-        System.out.println("Error in CsvFileReader !");
+			try {
 
-        e.printStackTrace();
+				fileReader.close();
 
-    } finally {
+			} catch (IOException e) {
 
-        try {
+				System.out.println("Error while closing fileReader !");
 
-            fileReader.close();
+				e.printStackTrace();
 
-        } catch (IOException e) {
+			}
 
-            System.out.println("Error while closing fileReader !");
+		}
+		return null;
 
-            e.printStackTrace();
-
-        }
-
-    }
-	return null;
-
-
+	}
 
 }
-
-
-
-}
-
-
-
-
-
-

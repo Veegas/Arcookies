@@ -20,17 +20,26 @@ public class Table {
 	private ArrayList<String> columns;
 	private String strKeyColName;
 	private LinearHashTable LHT;
-	private String singleIndex;
+	private String singleIndexedCol;
+
+
+/*	public Table(String strTableName,
+			Hashtable<String, String> htblColNameType,
+			Hashtable<String, String> htblColNameRefs, String strKeyColName, int maxRowsPerPage)
+			throws IOException {*/
 
 	
-
-	
-	public Table (String strTableName) throws IOException {
+	public Table (String strTableName, int maxRowsPerPage) throws IOException {
 		 
 		 ArrayList<String> pages = new ArrayList<String>();
 		 
 		 pageCount = 0;
 		 this.tableName = strTableName;
+		 this.maxRowsPerPage = maxRowsPerPage;
+		 pages = new ArrayList<String>();
+		 usedPages = new ArrayList<Page>();
+		 columns = new ArrayList<String>();
+		 LHT = new LinearHashTable((float) 0.75, 200);
 	
 		
 	 }
@@ -38,14 +47,10 @@ public class Table {
 	public void createNew(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException{
-		ArrayList<String> pages = new ArrayList<String>();
-		setLHT(new LinearHashTable((float) 0.75, 20));
-		pageCount = 0;
-		this.tableName = strTableName;
+		
 		this.strKeyColName = strKeyColName;
 		
-		
-		 Set nameType = htblColNameType.entrySet();
+		Set nameType = htblColNameType.entrySet();
 		    Iterator it1 = nameType.iterator();
 		 
 		 while(it1.hasNext()){
@@ -77,15 +82,13 @@ public class Table {
 			 }
 		 }
 		
-
 	}
-
 	public String getSingleIndex() {
-		return singleIndex;
+		return singleIndexedCol;
 	}
 
 	public void setSingleIndex(String singleIndex) {
-		this.singleIndex = singleIndex;
+		this.singleIndexedCol = singleIndex;
 	}
 
 	public ArrayList<String> getPages() {
@@ -123,6 +126,7 @@ public class Table {
 			String value = htblColNameValue.get(columnHead);
 			record.add(value);
 		}
+	
 		Page lastPage = Page.loadFromDisk(tableName + "_" + pageCount);
 		if(lastPage == null || lastPage.getRow_count() >= maxRowsPerPage) {
 			lastPage = createNewPage();
@@ -152,7 +156,9 @@ public class Table {
 
 	public Page createNewPage() {
 		pageCount++;
+
 		Page page = new Page(tableName + "_" + pageCount);
+		System.out.println("ABC");
 		usedPages.add(page);
 		return page;
 	}
@@ -172,6 +178,7 @@ public class Table {
 	public int getPageCount() {
 		return pageCount;
 	}
+
 
 	public void setPageCount(int pageCount) {
 		this.pageCount = pageCount;
@@ -213,13 +220,6 @@ public class Table {
 		y.put("name", "");
 		y.put("id", "");
 	
-		try {
-			Table table = new Table("ExampleTable");
-			System.out.println(table);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }

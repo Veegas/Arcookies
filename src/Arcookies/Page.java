@@ -1,12 +1,14 @@
 package Arcookies;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 
 
@@ -41,17 +43,28 @@ public class Page  implements java.io.Serializable{
 		         System.out.println(filename);
 	}
 	
-	public static Page loadFromDisk(String page_id) throws ClassNotFoundException, IOException {
-		FileInputStream fileIn = new FileInputStream(page_id + ".class");
-        ObjectInputStream in = new ObjectInputStream(fileIn);
-        Page page = (Page) in.readObject();
-        in.close();
-        fileIn.close();
-        return page;
+	public static Page loadFromDisk(String page_id) throws ClassNotFoundException{
+		
+		FileInputStream fileIn;
+		try {
+			fileIn = new FileInputStream(page_id + ".class");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+	        Page page = (Page) in.readObject();
+	        in.close();
+	        fileIn.close();
+	        return page;
+		} catch (IOException e) {
+			return null;
+		}
+        
 	}
 	
 	public void insertTuple(ArrayList<String> tuple) {
 		tuples.add(tuple);
+		Iterator<String> iterate = tuple.iterator();
+		while(iterate.hasNext()) {
+			System.out.println((String)iterate.next());
+		}
 	}
 	
 	public ArrayList<ArrayList<String>> getTuples() {
