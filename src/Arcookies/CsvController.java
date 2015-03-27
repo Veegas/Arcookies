@@ -70,7 +70,7 @@ public class CsvController {
 			fileReader = new BufferedReader(new FileReader(fileName));
 
 			// Read the CSV file header to skip it
-			fileReader.readLine();
+			//fileReader.readLine();
 
 			// Read the file line by line starting from the second line
 
