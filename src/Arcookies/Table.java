@@ -22,67 +22,64 @@ public class Table {
 	private LinearHashTable LHT;
 	private String singleIndexedCol;
 
-	public Table(String strTableName,
+
+/*	public Table(String strTableName,
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName, int maxRowsPerPage)
-			throws IOException {
+			throws IOException {*/
 
+	
+	public Table (String strTableName) throws IOException {
+		 
+		 ArrayList<String> pages = new ArrayList<String>();
+		 
+		 pageCount = 0;
+		 this.tableName = strTableName;
+	
+		
+	 }
+	
+	public void createNew(String strTableName,
+			Hashtable<String, String> htblColNameType,
+			Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException{
 		ArrayList<String> pages = new ArrayList<String>();
 		setLHT(new LinearHashTable((float) 0.75, 20));
 		pageCount = 0;
 		this.tableName = strTableName;
 		this.strKeyColName = strKeyColName;
-		this.maxRowsPerPage = maxRowsPerPage;
-		columns = new ArrayList<String>(); 
-		usedPages = new ArrayList<Page>();
-		
-		Iterator colNames = htblColNameType.keySet().iterator();
-		
-		while(colNames.hasNext()) {
-			String column  = (String) colNames.next();
-			columns.add(column);
-		}
-		
-		
-	}
-
-	public void writeMetaData(String strTableName,
-			Hashtable<String, String> htblColNameType,
-			Hashtable<String, String> htblColNameRefs, String strKeyColName) throws IOException {
 		
 		Set nameType = htblColNameType.entrySet();
-		Iterator it1 = nameType.iterator();
-
-		while (it1.hasNext()) {
-
-			boolean flag = false;
-			boolean key = false;
-			Map.Entry entry = (Map.Entry) it1.next();
-
-			if (((String) entry.getKey()) == strKeyColName) {
-				key = true;
-			}
-
-			Set nameRefs = htblColNameRefs.entrySet();
-			Iterator it2 = nameRefs.iterator();
-
-			while (it2.hasNext()) {
-				Map.Entry entry2 = (Map.Entry) it2.next();
-
-				if ((String) entry.getKey() == (String) entry2.getKey()) {
-					CsvController.writeCsvFile(strTableName,
-							(String) entry.getKey(), key, false,
-							(String) (entry2.getValue()),
-							(String) (entry.getValue()));
-					flag = true;
-				}
-			}
-			if (!flag) {
-				CsvController.writeCsvFile(strTableName,
-						(String) entry.getKey(), key, false, null,
-						(String) entry.getValue());
-			}
-		}
+		    Iterator it1 = nameType.iterator();
+		 
+		 while(it1.hasNext()){
+			 
+			 boolean flag = false;
+			 boolean key = false;
+			 Map.Entry entry = (Map.Entry) it1.next();
+			 columns.add((String)entry.getKey());
+			 
+			 
+			 
+			 if (((String)entry.getKey())== strKeyColName){
+				 key = true;
+			 }
+			 
+			 Set nameRefs = htblColNameRefs.entrySet();
+			    Iterator it2 = nameRefs.iterator();
+			    
+			 while(it2.hasNext()){
+				 Map.Entry entry2 = (Map.Entry) it2.next();
+				 
+				 if((String)entry.getKey() == (String) entry2.getKey()){
+					 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,(String)(entry2.getValue()),(String)(entry.getValue()));
+				 flag = true;
+				 }
+			 }
+			 if(!flag){
+				 CsvController.writeCsvFile(strTableName,(String)entry.getKey(),key,false,null,(String)entry.getValue());
+			 }
+		 }
+		
 	}
 	public String getSingleIndex() {
 		return singleIndexedCol;
@@ -157,10 +154,40 @@ public class Table {
 
 	public Page createNewPage() {
 		pageCount++;
+
 		Page page = new Page(tableName + "_" + pageCount);
 		System.out.println("ABC");
 		usedPages.add(page);
 		return page;
+	}
+	
+	
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	
+
+	public int getPageCount() {
+		return pageCount;
+	}
+
+
+	public void setPageCount(int pageCount) {
+		this.pageCount = pageCount;
+	}
+
+	public ArrayList<String> getColumns() {
+		return columns;
+	}
+
+	public void setColumns(ArrayList<String> columns) {
+		this.columns = columns;
 	}
 
 	public LinearHashTable getLHT() {

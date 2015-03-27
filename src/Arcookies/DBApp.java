@@ -1,9 +1,13 @@
 package Arcookies;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -60,6 +64,9 @@ public class DBApp implements DBAppInterface {
 
 	@Override
 	public void init() {
+		tables = new ArrayList<Table>();
+		tables = CsvController.readCsvFile();
+
 		try {
 			Properties prop = new Properties();
 			String configFileName = "./config/DBApp.properties";
@@ -85,14 +92,20 @@ public class DBApp implements DBAppInterface {
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 			throws DBAppException, IOException {
 
-		Table newTable = new Table(strTableName, htblColNameType,
-				htblColNameRefs, strKeyColName, MaximumRowsCountinPage);
+		Table newTable = new Table(strTableName);
+		newTable.createNew(strTableName, htblColNameType, htblColNameRefs,
+				strKeyColName);
 
-		if (!tables.contains(newTable)) {
-			tables.add(newTable);
-			newTable.writeMetaData(strTableName, htblColNameType,
-					htblColNameRefs, strKeyColName);
-		}
+		tables.add(newTable);
+
+		/*
+		 * Table newTable = new Table(strTableName, htblColNameType,
+		 * htblColNameRefs, strKeyColName, MaximumRowsCountinPage);
+		 * 
+		 * if (!tables.contains(newTable)) { tables.add(newTable);
+		 * newTable.writeMetaData(strTableName, htblColNameType,
+		 * htblColNameRefs, strKeyColName); }
+		 */
 
 	}
 
@@ -113,8 +126,10 @@ public class DBApp implements DBAppInterface {
 							} else {
 								break;
 							}
+
 						}
 					} catch (ClassNotFoundException e) {
+
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -138,8 +153,8 @@ public class DBApp implements DBAppInterface {
 			if (table.getName() == strTableName) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
-//					table.getLHT().put(table.getSingleIndex(),
-//							tempPage.getPage_id());
+					table.getLHT().put(table.getSingleIndex(),
+							tempPage.getPage_id());
 
 				} catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
