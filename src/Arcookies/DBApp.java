@@ -13,12 +13,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
 
-
+import net.sf.javaml.core.kdtree.KDTree;
 import exceptions.DBAppException;
 import exceptions.DBEngineException;
 
@@ -29,6 +30,12 @@ public class DBApp implements DBAppInterface {
 	int MaximumRowsCountinPage;
 
 	public static void main(String[] args) {
+
+
+		byte[] encoded = "hashbarownies".getBytes(StandardCharsets.UTF_8);
+		System.out.println(encoded[0]);
+
+
 		/*
 		try {
 			Hashtable<String, String> namesTypes = new Hashtable<String, String>();
@@ -79,7 +86,7 @@ public class DBApp implements DBAppInterface {
 
 	@Override
 	public void init() {
-		
+
 		try {
 			Properties prop = new Properties();
 			String configFileName = "./config/DBApp.properties";
@@ -88,7 +95,7 @@ public class DBApp implements DBAppInterface {
 			KDTreeN = Integer.parseInt(prop.getProperty("KDTreeN"));
 			MaximumRowsCountinPage = Integer.parseInt(prop
 					.getProperty("MaximumRowsCountinPage"));
-			
+
 			tables = new ArrayList<Table>();
 			tables = CsvController.readCsvFile(MaximumRowsCountinPage);
 
@@ -107,6 +114,7 @@ public class DBApp implements DBAppInterface {
 			Hashtable<String, String> htblColNameType,
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 			throws DBAppException, IOException {
+
 		
 		boolean alreadyExists= false;
 		String name = "";
@@ -137,8 +145,9 @@ public class DBApp implements DBAppInterface {
 				for (String p : table.getPages()) {
 					try {
 						for (int i = 0; i > 0; i++) {
-							String record = table.getValueFromPage(
-									Page.loadFromDisk(p), strColName, i);
+							String record = table.getValueFromPage(Page
+									.loadFromDisk(p),
+									strColName, i);
 							if (!(record == null)) {
 								table.getLHT().put(record, p);
 							} else {
@@ -162,29 +171,28 @@ public class DBApp implements DBAppInterface {
 		// TODO Auto-generated method stub
 		for (Table table : tables) {
 			if (table.getName().equals(strTableName)) {
-				if(table.getSingleIndexedCol().equals(null)){
+				if (table.getSingleIndexedCol().equals(null)) {
+					table.setKDT(htblColNames.size());// 2 hardcoded as hashtable has 2
+									// strings(columns) only
+					KDTree tree = table.getKDT();
+					Enumeration<String> colNames = htblColNames.keys();
 					
-					Enumeration<String> colNames= htblColNames.keys();
-					String col0 = colNames.nextElement();
-					String col1 = htblColNames.get(col0);
+					double [] keys = new double[htblColNames.size()];
 					for (String p : table.getPages()) {
-						try {
-							for (int i = 0; i > 0; i++) {
-								String recordCol0 = table.getValueFromPage(
-										Page.loadFromDisk(p), col0, i);
-								String recordCol1 = table.getValueFromPage(
-										Page.loadFromDisk(p), col1, i);
-								if (!(recordCol0 ==null || recordCol1 == null)) {
-						
-								} else {
-									break;
-								}
-
+						Page current = Page.loadFromDisk(p);
+						for (int i = 0; i > 0; i++) {
+							int columnIndex = table.getColumns().indexOf(colNames.nextElement());
+							String record = table.getValueFromPage(current
+										, colNames.nextElement(), i);
+								
 							}
-						} catch (ClassNotFoundException e) {
-
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						
+							String record = 
+							if (!(record == null)) {
+								tree.insert(keys, p);
+							} else {
+								break;
+							}	
 						}
 					}
 				}
@@ -240,4 +248,21 @@ public class DBApp implements DBAppInterface {
 
 		}
 	}
+
+	public static double AlphabetsToFloat(String s) {
+		byte[] encoded = s.getBytes(StandardCharsets.UTF_8);
+
+		for (byte c : encoded) {
+
+		}
+
+		/*
+		 * s=s.toLowerCase(); StringBuilder sb = new StringBuilder(); for (char
+		 * c : s.toCharArray()) { sb.append((char) (c - 'a' + 1)); } String b =
+		 * ""; for (int i = 0; i < sb.length(); i++) { b = b +
+		 * (sb.codePointAt(i)); }
+		 */
+		return Float.parseFloat(c);
+	}
+
 }
