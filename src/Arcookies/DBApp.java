@@ -144,9 +144,9 @@ public class DBApp implements DBAppInterface {
 				table.setSingleIndexedCol(strColName);
 				for (String p : table.getPages()) {
 					try {
-						for (int i = 0; i > 0; i++) {
-							String record = table.getValueFromPage(Page
-									.loadFromDisk(p),
+						Page temporaryPage = Page.loadFromDisk(p);
+						for (int i = 0; i <= temporaryPage.getRow_count(); i++) {
+							String record = table.getValueFromPage(temporaryPage,
 									strColName, i);
 							if (!(record == null)) {
 								table.getLHT().put(record, p);
@@ -165,7 +165,7 @@ public class DBApp implements DBAppInterface {
 		}
 	}
 
-	@Override
+/*	@Override
 	public void createMultiDimIndex(String strTableName,
 			Hashtable<String, String> htblColNames) throws DBAppException {
 		// TODO Auto-generated method stub
@@ -197,8 +197,7 @@ public class DBApp implements DBAppInterface {
 					}
 				}
 			}
-		}
-	}
+	}*/
 
 	@Override
 	public void insertIntoTable(String strTableName,
@@ -249,20 +248,27 @@ public class DBApp implements DBAppInterface {
 		}
 	}
 
-	public static double AlphabetsToFloat(String s) {
+	@Override
+	public void createMultiDimIndex(String strTableName,
+			Hashtable<String, String> htblColNames) throws DBAppException {
+		// TODO Auto-generated method stub
+		
+	}
+
+/*	public static double AlphabetsToFloat(String s) {
 		byte[] encoded = s.getBytes(StandardCharsets.UTF_8);
 
 		for (byte c : encoded) {
 
 		}
 
-		/*
+		
 		 * s=s.toLowerCase(); StringBuilder sb = new StringBuilder(); for (char
 		 * c : s.toCharArray()) { sb.append((char) (c - 'a' + 1)); } String b =
 		 * ""; for (int i = 0; i < sb.length(); i++) { b = b +
 		 * (sb.codePointAt(i)); }
-		 */
-		return Float.parseFloat(c);
+		 
+//		return Float.parseFloat(c);
 	}
-
+*/
 }
