@@ -80,12 +80,21 @@ public class CsvController {
 				String[] tokens = line.split(",");
 
 				if (tokens.length > 0) {
-
-					// Create a new table object and fill his data
-					Table table = new Table(tokens[0], maxRowCount);
-					if (tables.contains(table)) {
-						table.getColumns().add(tokens[1]);
+                   boolean alreadyExists = false;
+                   Table tempTable = null;
+                   
+                   for (Table table : tables){
+                	   if (table.getName().equalsIgnoreCase(tokens[0])){
+                		   alreadyExists = true;
+                		   tempTable = table;
+                		   break;
+                	   }
+                   }
+					
+					if (alreadyExists) {
+						tempTable.getColumns().add(tokens[1]);
 					} else {
+						Table table = new Table(tokens[0], maxRowCount);
 						tables.add(table);
 						table.getColumns().add(tokens[1]);
 					}
