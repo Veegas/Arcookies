@@ -31,9 +31,12 @@ public class DBApp implements DBAppInterface {
 
 	public static void main(String[] args) {
 
+
 		byte[] encoded = "hashbarownies".getBytes(StandardCharsets.UTF_8);
 		System.out.println(encoded[0]);
 
+
+		/*
 		try {
 			Hashtable<String, String> namesTypes = new Hashtable<String, String>();
 
@@ -48,10 +51,10 @@ public class DBApp implements DBAppInterface {
 			namesRefs.put("tutorial", "class");
 			namesRefs.put("name", "student");
 
-			namesValues.put("name", "test");
-			namesValues.put("tutorial", "test");
-			namesValues.put("id", "test");
-			namesValues.put("lol", "test");
+			namesValues.put("name", "testname");
+			namesValues.put("tutorial", "testtutorial");
+			namesValues.put("id", "testid");
+			namesValues.put("lol", "testlol");
 
 			DBApp app = new DBApp();
 			app.init();
@@ -65,6 +68,20 @@ public class DBApp implements DBAppInterface {
 			System.out.println("error hena");
 			e.printStackTrace();
 		}
+*/	
+		DBApp app = new DBApp();
+		app.init();
+		
+		System.out.println(app.tables);
+		
+	}
+
+	public ArrayList<Table> getTables() {
+		return tables;
+	}
+
+	public void setTables(ArrayList<Table> tables) {
+		this.tables = tables;
 	}
 
 	@Override
@@ -98,19 +115,27 @@ public class DBApp implements DBAppInterface {
 			Hashtable<String, String> htblColNameRefs, String strKeyColName)
 			throws DBAppException, IOException {
 
-		/*
-		 * 3ayzeen nezawed eno yeshoof fel metadata law esm el table dah mawgood
-		 * abl kda ye throw exception
-		 */
+		
+		boolean alreadyExists= false;
+		String name = "";
+		for(Table table: tables){
+			if (table.getName().equalsIgnoreCase(strTableName)){
+				alreadyExists = true;
+				name = table.getName();
+				break;
+			}
+		}
+		if(!alreadyExists){
 		Table newTable = new Table(strTableName, MaximumRowsCountinPage);
 		newTable.createNew(strTableName, htblColNameType, htblColNameRefs,
 				strKeyColName);
-
 		tables.add(newTable);
+		} else {
+			throw new DBAppException("The table "+ name + " already exists!");
+		}
 
 	}
 
-	@Override
 	public void createIndex(String strTableName, String strColName)
 			throws DBAppException {
 		// TODO Auto-generated method stub
@@ -121,7 +146,7 @@ public class DBApp implements DBAppInterface {
 					try {
 						for (int i = 0; i > 0; i++) {
 							String record = table.getValueFromPage(Page
-									.loadFromDisk(table.getName() + "_" + p),
+									.loadFromDisk(p),
 									strColName, i);
 							if (!(record == null)) {
 								table.getLHT().put(record, p);
@@ -154,7 +179,7 @@ public class DBApp implements DBAppInterface {
 					
 					double [] keys = new double[htblColNames.size()];
 					for (String p : table.getPages()) {
-						Page current = Page.loadFromDisk(table.getName()+"_"+p);
+						Page current = Page.loadFromDisk(p);
 						for (int i = 0; i > 0; i++) {
 							int columnIndex = table.getColumns().indexOf(colNames.nextElement());
 							String record = table.getValueFromPage(current
@@ -180,12 +205,9 @@ public class DBApp implements DBAppInterface {
 			Hashtable<String, String> htblColNameValue) throws DBAppException {
 		// TODO Auto-generated method stub
 		for (Table table : tables) {
-			if (table.getName() == strTableName) {
+			if (table.getName().equalsIgnoreCase(strTableName)) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
-					table.getLHT().put(table.getSingleIndexedCol(),
-							tempPage.getPage_id());
-
 				} catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

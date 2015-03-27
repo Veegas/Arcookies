@@ -149,7 +149,7 @@ public class Table {
 		Page page = new Page(tableName + "_" + pageCount);
 		System.out.println("ABC");
 		usedPages.add(page);
-		pages.add(""+pageCount);
+		pages.add(tableName +"_"+pageCount);
 		return page;
 	}
 	

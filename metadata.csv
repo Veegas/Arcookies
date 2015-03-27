@@ -1,5 +1,10 @@
-
+,,,,,
 TrialTable,lol,false,false,TrialTable,null
+TrialTable,name,false,false,TrialTable,student
+TrialTable,tutorial,false,false,TrialTable,class
+TrialTable,id,true,false,TrialTable,null
+TrialTable,lol,false,false,TrialTable,null
+<<<<<<< HEAD
 TrialTable,name,false,false,TrialTable,student
 TrialTable,tutorial,false,false,TrialTable,class
 TrialTable,id,true,false,TrialTable,null
@@ -59,7 +64,5 @@ TrialTable,lol,false,false,TrialTable,null
 TrialTable,name,false,false,TrialTable,student
 TrialTable,tutorial,false,false,TrialTable,class
 TrialTable,id,true,false,TrialTable,null
-TrialTable,lol,false,false,TrialTable,null
-TrialTable,name,false,false,TrialTable,student
-TrialTable,tutorial,false,false,TrialTable,class
-TrialTable,id,true,false,TrialTable,null
+=======
+>>>>>>> 1a50454a81b334335e91e8f7b5d215a13a038372
