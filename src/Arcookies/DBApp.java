@@ -28,7 +28,7 @@ public class DBApp implements DBAppInterface {
 	int MaximumRowsCountinPage;
 
 	public static void main(String[] args) {
-
+		/*
 		try {
 			Hashtable<String, String> namesTypes = new Hashtable<String, String>();
 
@@ -43,10 +43,10 @@ public class DBApp implements DBAppInterface {
 			namesRefs.put("tutorial", "class");
 			namesRefs.put("name", "student");
 
-			namesValues.put("name", "test");
-			namesValues.put("tutorial", "test");
-			namesValues.put("id", "test");
-			namesValues.put("lol", "test");
+			namesValues.put("name", "testname");
+			namesValues.put("tutorial", "testtutorial");
+			namesValues.put("id", "testid");
+			namesValues.put("lol", "testlol");
 
 			DBApp app = new DBApp();
 			app.init();
@@ -60,6 +60,20 @@ public class DBApp implements DBAppInterface {
 			System.out.println("error hena");
 			e.printStackTrace();
 		}
+*/	
+		DBApp app = new DBApp();
+		app.init();
+		
+		System.out.println(app.tables);
+		
+	}
+
+	public ArrayList<Table> getTables() {
+		return tables;
+	}
+
+	public void setTables(ArrayList<Table> tables) {
+		this.tables = tables;
 	}
 
 	@Override
@@ -149,9 +163,9 @@ public class DBApp implements DBAppInterface {
 			if (table.getName() == strTableName) {
 				try {
 					Page tempPage = table.insertIntoPage(htblColNameValue);
-					table.getLHT().put(table.getSingleIndex(),
+					/*table.getLHT().put(table.getSingleIndex(),
 							tempPage.getPage_id());
-
+*/
 				} catch (ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -122,9 +122,11 @@ public class Table {
 	public Page insertIntoPage(Hashtable<String, String> htblColNameValue)
 			throws IOException, ClassNotFoundException {
 		ArrayList<String> record = new ArrayList<String>();
+		System.out.println(columns);
 		for(String columnHead: columns) {
 			String value = htblColNameValue.get(columnHead);
 			record.add(value);
+			System.out.println("RecordX " + record);
 		}
 	
 		Page lastPage = Page.loadFromDisk(tableName + "_" + pageCount);

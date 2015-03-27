@@ -60,11 +60,8 @@ public class Page  implements java.io.Serializable{
 	}
 	
 	public void insertTuple(ArrayList<String> tuple) {
+		System.out.println("THIS IS THE TUPLE" + tuple);
 		tuples.add(tuple);
-		Iterator<String> iterate = tuple.iterator();
-		while(iterate.hasNext()) {
-			System.out.println((String)iterate.next());
-		}
 	}
 	
 	public ArrayList<ArrayList<String>> getTuples() {
